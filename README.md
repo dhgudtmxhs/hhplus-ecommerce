@@ -4,9 +4,8 @@
 test
 
 
-### 마일스톤
-https://github.com/users/dhgudtmxhs/projects/3
-
+#### [🔗 마일스톤](https://github.com/users/dhgudtmxhs/projects/3)
+  
 ### 시퀀스 다이어그램
 ```mermaid
 sequenceDiagram
