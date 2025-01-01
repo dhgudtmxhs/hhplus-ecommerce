@@ -20,15 +20,9 @@ e-commerce 에서 자주 사용되는 기능들을 구현한 백엔드 프로젝
 
 ## [🔗 마일스톤](https://github.com/users/dhgudtmxhs/projects/3)
   
-## 시퀀스 다이어그램
+## [🔗 시퀀스 다이어그램, 플로우차트](https://github.com/dhgudtmxhs/hhplus-ecommerce/pull/11)
 
-### 플로우 차트
-
-### ERD
-
-### API
-
-### MOCK API
+## [🔗 ERD, API명세, 패키지 구조]
 
 ## 초기 설계 패키지 구조 - 수정해야함
 ```plaintext
