@@ -129,7 +129,8 @@ kr
 **도메인 중심 설계**(DDD)와 **클린 + 레이어드 아키텍처**를 기반으로 패키지를 구성했습니다.  
 
 도메인별(`point`, `order`, `product`, `user`, `coupon`)로 패키지를 나누었으며,  
-각 도메인은 **interfaces → application → domain ← infra**의 계층 구조를 따릅니다.  
+각 도메인은 **interfaces → application → domain ← infra**의 계층 구조를 따릅니다. 
+결제(payment)는 주문(Order) 흐름의 일부로 판단하여, order 도메인 내에 포함했습니다.
 모든 계층은 도메인 중심으로 설계되었으며, 높은 응집도와 낮은 결합도를 목표로 합니다.  
 
 공통 기능은 `common` 패키지로 관리합니다.
