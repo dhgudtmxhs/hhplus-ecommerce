@@ -34,7 +34,7 @@ kr
             ├── point
             │   ├── interfaces
             │   │   ├── PointController.java       ← REST API
-            │   │   ├── PointRequest.java         ← DTO 요청
+            │   │   ├── PointRequest.java          ← DTO 요청
             │   │   ├── PointResponse.java         ← DTO 응답
             │   │   └── ...
             │   ├── application
