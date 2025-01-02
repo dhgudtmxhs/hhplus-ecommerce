@@ -35,8 +35,7 @@ kr
             │   ├── interfaces
             │   │   ├── PointController.java       ← REST API
             │   │   ├── PointRequest.java          ← DTO 요청
-            │   │   ├── PointResponse.java         ← DTO 응답
-            │   │   └── ...
+            │   │   └── PointResponse.java         ← DTO 응답
             │   ├── application
             │   │   ├── PointFacade.java           ← 유스케이스 조율
             │   │   ├── PointCommand.java          ← 유스케이스 요청 DTO
@@ -65,6 +64,7 @@ kr
             │   │   └── OrderRepository.java
             │   └── infra
             │       ├── OrderJpaEntity.java
+            │       ├── PaymentJpaEntity.java
             │       ├── JpaOrderRepository.java
             │       └── OrderRepositoryImpl.java
             ├── product
