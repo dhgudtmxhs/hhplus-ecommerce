@@ -3,7 +3,7 @@
 ## hhplus-ecommerce
 e-commerce 에서 자주 사용되는 기능들을 구현한 백엔드 프로젝트입니다.  
 사용자의 잔액 관리, 상품 조회, 쿠폰 발급, 주문/결제, 인기 상품 통계 등 e-commerce의 주요 기능을 제공합니다.  
-클린 아키텍처와 레이어드 아키텍처를 기반으로 DDD(Domain-Driven Design)를 적용하여, 도메인 중심의 비즈니스 로직을 명확히 분리하고 유연한 패키지 구조를 설계하고자 했습니다.
+클린 아키텍처 + 레이어드 아키텍처를 기반으로 DDD(Domain-Driven Design)를 적용하였습니다.
 
 
 ## [🔗 마일스톤](https://github.com/users/dhgudtmxhs/projects/3)
@@ -123,3 +123,11 @@ kr
                 │   └── ErrorCode.java              ← 공통 에러 코드
                 └── util, ... ← 필요한 경우 추가
 ```
+
+**도메인 중심 설계**(DDD)와 **클린 + 레이어드 아키텍처**를 기반으로 패키지를 구성했습니다.  
+
+도메인별(`point`, `order`, `product`, `user`, `coupon`)로 패키지를 나누었으며,  
+각 도메인은 **interfaces → application → domain ← infra**의 계층 구조를 따릅니다.  
+모든 계층은 도메인 중심으로 설계되었으며, **높은 응집도와 낮은 결합도**를 목표로 합니다.  
+
+공통 기능은 `common` 패키지에 별도로 관리됩니다.
