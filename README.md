@@ -31,23 +31,41 @@ kr
 └── hhplus
     └── be
         └── server
+            ├── point
+            │   ├── interfaces
+            │   │   ├── PointController.java       ← REST API
+            │   │   ├── PointRequest.java         ← DTO 요청
+            │   │   ├── PointResponse.java         ← DTO 응답
+            │   │   └── ...
+            │   ├── application
+            │   │   ├── PointFacade.java           ← 유스케이스 조율
+            │   │   ├── PointCommand.java          ← 유스케이스 요청 DTO
+            │   │   └── PointInfo.java             ← 유스케이스 응답 DTO
+            │   ├── domain
+            │   │   ├── Point.java                 ← 도메인 객체
+            │   │   ├── PointDomainService.java    ← 도메인 비즈니스 로직
+            │   │   └── PointRepository.java       ← 도메인 레포지토리 인터페이스
+            │   └── infra
+            │       ├── PointJpaEntity.java        ← DB 매핑 엔티티
+            │       ├── JpaPointRepository.java    ← Spring Data JPA 인터페이스
+            │       └── PointRepositoryImpl.java   ← 도메인 인터페이스의 구현체
             ├── order
             │   ├── interfaces
-            │   │   ├── OrderController.java       ← REST API
-            │   │   ├── OrderRequest.java          ← DTO 요청
-            │   │   └── OrderResponse.java         ← DTO 응답
+            │   │   ├── OrderController.java
+            │   │   ├── OrderRequest.java
+            │   │   └── OrderResponse.java
             │   ├── application
-            │   │   ├── OrderFacade.java           ← 유스케이스 조율
-            │   │   ├── OrderCommand.java          ← 유스케이스 요청 DTO
-            │   │   └── OrderInfo.java             ← 유스케이스 응답 DTO
+            │   │   ├── OrderFacade.java
+            │   │   ├── OrderCommand.java
+            │   │   └── OrderInfo.java
             │   ├── domain
-            │   │   ├── Order.java                 ← 도메인 객체
-            │   │   ├── OrderDomainService.java    ← 도메인 비즈니스 로직
-            │   │   └── OrderRepository.java       ← 도메인 레포지토리 인터페이스
+            │   │   ├── Order.java
+            │   │   ├── OrderDomainService.java
+            │   │   └── OrderRepository.java
             │   └── infra
-            │       ├── OrderJpaEntity.java        ← DB 매핑 엔티티
-            │       ├── JpaOrderRepository.java    ← Spring Data JPA 인터페이스
-            │       └── OrderRepositoryImpl.java   ← 도메인 인터페이스의 구현체
+            │       ├── OrderJpaEntity.java
+            │       ├── JpaOrderRepository.java
+            │       └── OrderRepositoryImpl.java
             ├── product
             │   ├── interfaces
             │   │   ├── ProductController.java
