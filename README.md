@@ -10,7 +10,7 @@ e-commerce 에서 자주 사용되는 기능들을 구현한 백엔드 프로젝
   
 ## [🔗 시퀀스 다이어그램, 플로우차트](https://github.com/dhgudtmxhs/hhplus-ecommerce/pull/11)
 
-## [🔗 ERD, API명세]
+## [🔗 ERD, API명세](https://github.com/dhgudtmxhs/hhplus-ecommerce/pull/12)
 
 
 ## Configuration
@@ -18,7 +18,7 @@ e-commerce 에서 자주 사용되는 기능들을 구현한 백엔드 프로젝
 |---------------------|------------------------------|
 | ☕ Programming      | **Java 17**                  |
 | 🌱 Framework        | **Spring Boot 3.4.1**        |
-| ✅ Testing          | **JUnit 5**                    |
+| ✅ Testing          | **JUnit 5**                  |
 | 🐬 Database         | **MySQL 8.0**                |
 | 🐳 Containerization | **Docker**                   |
 | 🛠 Cache            | **Redis**                    |
