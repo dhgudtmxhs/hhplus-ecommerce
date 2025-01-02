@@ -59,7 +59,8 @@ kr
             │   │   ├── OrderCommand.java
             │   │   └── OrderInfo.java
             │   ├── domain
-            │   │   ├── Order.java
+            │   │   ├── Order.java    ← 주문 엔티티
+            │   │   ├── Payment.java  ← 결제 엔티티
             │   │   ├── OrderDomainService.java
             │   │   └── OrderRepository.java
             │   └── infra
