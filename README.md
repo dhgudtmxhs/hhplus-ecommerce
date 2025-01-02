@@ -58,15 +58,16 @@ kr
             │   │   ├── OrderCommand.java
             │   │   └── OrderInfo.java
             │   ├── domain
-            │   │   ├── Order.java    ← 주문 엔티티
-            │   │   ├── Payment.java  ← 결제 엔티티
+            │   │   ├── Order.java    ← 주문 도메인 객체
+            │   │   ├── Payment.java  ← 결제 도메인 객체
             │   │   ├── OrderDomainService.java
             │   │   └── OrderRepository.java
             │   └── infra
-            │       ├── OrderJpaEntity.java
-            │       ├── PaymentJpaEntity.java
-            │       ├── JpaOrderRepository.java
-            │       └── OrderRepositoryImpl.java
+            │       ├── OrderJpaEntity.java        ← 주문 엔티티
+            │       ├── PaymentJpaEntity.java      ← 결제 엔티티
+            │       ├── JpaOrderRepository.java    ← 주문 JPA Repository
+            │       ├── JpaPaymentRepository.java  ← 결제 JPA Repository
+            │       └── OrderRepositoryImpl.java   ← 주문 커스텀 Repository 구현체
             ├── product
             │   ├── interfaces
             │   │   ├── ProductController.java
