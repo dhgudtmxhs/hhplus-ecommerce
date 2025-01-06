@@ -36,6 +36,10 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation ("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 
+	// Lombok
+	compileOnly("org.projectlombok:lombok:1.18.30")
+	annotationProcessor("org.projectlombok:lombok:1.18.30")
+
     // DB
 	runtimeOnly("com.mysql:mysql-connector-j")
 
