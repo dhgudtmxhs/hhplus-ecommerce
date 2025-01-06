@@ -58,16 +58,30 @@ kr
             │   │   ├── OrderCommand.java
             │   │   └── OrderInfo.java
             │   ├── domain
-            │   │   ├── Order.java    ← 주문 도메인 객체
-            │   │   ├── Payment.java  ← 결제 도메인 객체
+            │   │   ├── Order.java
             │   │   ├── OrderDomainService.java
             │   │   └── OrderRepository.java
             │   └── infra
-            │       ├── OrderJpaEntity.java        ← 주문 엔티티
-            │       ├── PaymentJpaEntity.java      ← 결제 엔티티
-            │       ├── JpaOrderRepository.java    ← 주문 JPA Repository
-            │       ├── JpaPaymentRepository.java  ← 결제 JPA Repository
-            │       └── OrderRepositoryImpl.java   ← 주문 커스텀 Repository 구현체
+            │       ├── OrderJpaEntity.java
+            │       ├── JpaOrderRepository.java
+            │       └── OrderRepositoryImpl.java
+            ├── payment
+            │   ├── interfaces
+            │   │   ├── PaymentController.java
+            │   │   ├── PaymentRequest.java
+            │   │   └── PaymentResponse.java
+            │   ├── application
+            │   │   ├── PaymentFacade.java
+            │   │   ├── PaymentCommand.java
+            │   │   └── PaymentInfo.java
+            │   ├── domain
+            │   │   ├── Payment.java
+            │   │   ├── PaymentDomainService.java
+            │   │   └── PaymentRepository.java
+            │   └── infra
+            │       ├── PaymentJpaEntity.java
+            │       ├── JpaPaymentRepository.java
+            │       └── PaymentRepositoryImpl.java
             ├── product
             │   ├── interfaces
             │   │   ├── ProductController.java
@@ -125,6 +139,9 @@ kr
                 │   └── ErrorCode.java              ← 공통 에러 코드
                 └── util, ... ← 필요한 경우 추가
 ```
+
+
+
 
 **도메인 중심 설계**(DDD)와 **클린 + 레이어드 아키텍처**를 기반으로 패키지를 구성했습니다.  
 
