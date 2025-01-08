@@ -2,6 +2,7 @@ plugins {
 	java
 	id("org.springframework.boot") version "3.4.1"
 	id("io.spring.dependency-management") version "1.1.7"
+	idea
 }
 
 fun getGitHash(): String {
@@ -63,12 +64,12 @@ dependencies {
 	annotationProcessor("jakarta.persistence:jakarta.persistence-api:3.1.0")
 }
 
-val querydslDir = "${project.layout.buildDirectory.get()}/generated/querydsl"
+val querydslDir = "${project.buildDir}/generated/sources/annotationProcessor/java/main"
 
 sourceSets {
 	main {
 		java {
-			setSrcDirs(listOf("src/main/java", querydslDir))
+			srcDir(querydslDir)
 		}
 	}
 }
