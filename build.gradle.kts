@@ -15,7 +15,7 @@ version = getGitHash()
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
+		languageVersion.set(JavaLanguageVersion.of(17))
 	}
 }
 
@@ -29,13 +29,14 @@ dependencyManagement {
 	}
 }
 
+val querydslVersion = "5.0.0"
 
 dependencies {
 	// Spring
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation ("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 
 	// DB
 	runtimeOnly("com.mysql:mysql-connector-j")
@@ -55,6 +56,28 @@ dependencies {
 	implementation("org.mapstruct:mapstruct:1.5.5.Final")
 	annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
 
+	// QueryDSL
+	implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
+	implementation("com.querydsl:querydsl-jpa:$querydslVersion")
+	annotationProcessor("com.querydsl:querydsl-apt:$querydslVersion:jakarta")
+	annotationProcessor("jakarta.persistence:jakarta.persistence-api:3.1.0")
+}
+
+val querydslDir = "$buildDir/generated/querydsl"
+
+sourceSets {
+	main {
+		java {
+			setSrcDirs(listOf("src/main/java", querydslDir))
+		}
+	}
+}
+
+tasks.register("compileQuerydsl", JavaCompile::class) {
+	source = fileTree("src/main/java")
+	classpath = configurations["annotationProcessor"] + configurations["implementation"]
+	destinationDirectory.set(file(querydslDir))
+	options.annotationProcessorPath = configurations["annotationProcessor"]
 }
 
 tasks.withType<Test> {
