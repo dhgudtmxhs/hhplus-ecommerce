@@ -63,7 +63,7 @@ dependencies {
 	annotationProcessor("jakarta.persistence:jakarta.persistence-api:3.1.0")
 }
 
-val querydslDir = "$buildDir/generated/querydsl"
+val querydslDir = "${project.layout.buildDirectory.get()}/generated/querydsl"
 
 sourceSets {
 	main {
