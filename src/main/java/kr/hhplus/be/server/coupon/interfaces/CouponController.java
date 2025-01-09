@@ -3,42 +3,48 @@ package kr.hhplus.be.server.coupon.interfaces;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import kr.hhplus.be.server.coupon.application.CouponCommand;
+import kr.hhplus.be.server.coupon.application.CouponFacade;
+import kr.hhplus.be.server.coupon.application.IssueCouponCommand;
+import kr.hhplus.be.server.coupon.application.UserCouponInfo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/coupons")
+@RequiredArgsConstructor
 @Tag(name = "Coupon API", description = "쿠폰 관련 API")
 public class CouponController {
 
+    private final CouponFacade couponFacade;
+    private final IssueCouponRequestMapper issueCouponRequestMapper;
+    private final CouponResponseMapper couponResponseMapper;
+
     @Operation(summary = "보유 쿠폰 조회", description = "사용자가 보유한 쿠폰 목록을 조회합니다.")
     @GetMapping("/{userId}")
-    public ResponseEntity<String> getUserCoupons(
-            @Parameter(description = "사용자 ID", required = true)
-            @PathVariable("userId") String userId) {
+    public ResponseEntity<List<UserCouponResponse>> getUserCoupons(@Parameter(description = "사용자 ID", required = true)
+                                                                   @PathVariable("userId") @NotNull Long userId) {
 
-        String mockResponse = "["
-                + "{\"couponId\": \"coupon123\", \"description\": \"10% 할인\", \"status\": \"VALID\"}"
-                + "]";
-        return ResponseEntity.ok(mockResponse);
+        CouponCommand command = new CouponCommand(userId);
+        List<UserCouponInfo> userCoupons = couponFacade.getUserCoupons(command);
+
+        List<UserCouponResponse> response = couponResponseMapper.toUserCouponResponseList(userCoupons);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "쿠폰 발급", description = "선착순으로 쿠폰을 발급합니다.")
-    @PostMapping("/{userId}/issue")
-    public ResponseEntity<String> issueCoupon(
-            @Parameter(description = "사용자 ID", required = true)
-            @PathVariable("userId") String userId) {
+    @PostMapping("/issue")
+    public ResponseEntity<UserCouponResponse> issueCoupon(@Valid @RequestBody IssueCouponRequest request) {
 
-        boolean stockAvailable = true;
+        IssueCouponCommand command = issueCouponRequestMapper.toIssueCouponCommand(request);
+        UserCouponInfo issueCouponInfo = couponFacade.issueCoupon(command);
 
-        if (stockAvailable) {
-            // 쿠폰 발급 성공
-            String mockResponse = "{\"message\": \"쿠폰 발급 완료\", \"couponId\": \"coupon124\"}";
-            return ResponseEntity.ok(mockResponse);
-        } else {
-            // 쿠폰 재고 소진
-            String errorResponse = "{\"message\": \"쿠폰 재고가 소진되었습니다.\"}";
-            return ResponseEntity.status(400).body(errorResponse);
-        }
+        UserCouponResponse response = couponResponseMapper.toUserCouponResponse(issueCouponInfo);
+        return ResponseEntity.ok(response);
     }
 }
