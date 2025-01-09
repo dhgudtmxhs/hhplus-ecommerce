@@ -16,10 +16,11 @@ spring:
     generate-ddl: false
     show-sql: false
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
     properties:
       hibernate.timezone.default_storage: NORMALIZE_UTC
       hibernate.jdbc.time_zone: UTC
+      hibernate.hbm2ddl.schema-generation.foreign-key-handling-mode: skip
 
 ---
 spring.config.activate.on-profile: local, test
