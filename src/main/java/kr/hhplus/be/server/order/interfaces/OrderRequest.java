@@ -1,8 +1,9 @@
 package kr.hhplus.be.server.order.interfaces;
 
+import java.util.List;
+
 public record OrderRequest (
-        String userId,
-        String productId,
-        int quantity,
-        String couponId
+        Long userId,
+        List<ProductOrderRequest> products,
+        Long couponId
 ){}
