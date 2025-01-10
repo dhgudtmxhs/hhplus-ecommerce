@@ -26,25 +26,25 @@ public class CouponServiceIntegrationTest {
     private CouponRepository couponRepository;
 
     @Autowired
-    CouponJpaRepository couponJpaRepository;
+    private CouponJpaRepository couponJpaRepository;
 
     @Autowired
-    UserCouponJpaRepository userCouponJpaRepository;
+    private UserCouponJpaRepository userCouponJpaRepository;
 
     @Autowired
-    UserJpaRepository userJpaRepository;
+    private UserJpaRepository userJpaRepository;
 
     @BeforeEach
     void setUp() {
+        // 초기화 작업이 필요하면 여기에 추가
     }
 
     @Test
     void 유효한_사용자_ID로_모든_사용_가능한_쿠폰을_조회한다() {
-        Long userId = 1L;
-
-        // UserEntity 저장
+        // Given
         UserEntity userEntity = new UserEntity(null, "testUser");
         userJpaRepository.save(userEntity);
+        Long userId = userEntity.getId();
 
         // CouponEntity 저장
         CouponEntity couponEntity1 = new CouponEntity(null, "COUPON1", DiscountType.FIXED, 1000L, 10L, 5L);
@@ -63,19 +63,17 @@ public class CouponServiceIntegrationTest {
 
         // Then
         assertNotNull(actualCoupons);
-        assertEquals(2, actualCoupons.size()); // 2개의 쿠폰이 조회되어야 함
+        assertEquals(2, actualCoupons.size(), "2개의 쿠폰이 조회되어야 함");
     }
 
     @Test
     void 유효한_사용자_ID와_쿠폰_코드로_쿠폰을_발급한다() {
-        Long userId = 1L;
-        String couponCode = "COUPON1";
-
-        // UserEntity 저장
+        // Given
         UserEntity userEntity = new UserEntity(null, "testUser");
         userJpaRepository.save(userEntity);
+        Long userId = userEntity.getId();
+        String couponCode = "COUPON1";
 
-        // CouponEntity 저장
         CouponEntity couponEntity = new CouponEntity(null, couponCode, DiscountType.FIXED, 1000L, 10L, 5L);
         couponJpaRepository.save(couponEntity);
 
@@ -84,17 +82,16 @@ public class CouponServiceIntegrationTest {
 
         // Then
         assertNotNull(issuedCoupon);
-        assertEquals(userId, issuedCoupon.userId());
-        assertEquals(couponEntity.getId(), issuedCoupon.userId());
+        assertEquals(userId, issuedCoupon.userId(), "발급된 쿠폰의 사용자 ID가 일치해야 함");
+        assertEquals(couponEntity.getId(), issuedCoupon.couponId(), "발급된 쿠폰의 쿠폰 ID가 일치해야 함");
     }
 
     @Test
     void 유효한_사용자_ID와_쿠폰_ID로_조회하면_쿠폰을_반환한다() {
         // Given
-        Long userId = 1L;
-
         UserEntity userEntity = new UserEntity(null, "testUser");
         userJpaRepository.save(userEntity);
+        Long userId = userEntity.getId();
 
         CouponEntity couponEntity = new CouponEntity(null, "COUPON1", DiscountType.FIXED, 1000L, 10L, 5L);
         couponJpaRepository.save(couponEntity);
@@ -108,8 +105,6 @@ public class CouponServiceIntegrationTest {
 
         // Then
         assertNotNull(actualCoupon);
-        assertEquals(couponEntity.getId(), actualCoupon.id());
+        assertEquals(couponEntity.getId(), actualCoupon.id(), "반환된 쿠폰의 ID가 일치해야 함");
     }
-
-
 }
