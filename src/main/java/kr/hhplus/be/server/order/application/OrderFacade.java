@@ -47,8 +47,7 @@ public class OrderFacade {
         List<Product> products = productService.reduceStockAndGetProducts(command.products());
 
         // 5. 주문 생성
-        Order order = orderService.createOrder(user, products, coupon, point);
-
+        Order order = orderService.createOrder(user, products, coupon, point, command.products());
         // 6. 결제 요청
         Payment payment = paymentService.processPayment(order, point);
 

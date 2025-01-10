@@ -7,8 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Getter
 @NoArgsConstructor
 @Entity
@@ -39,6 +37,10 @@ public class OrderItemEntity extends BaseEntity {
         this.product = product;
         this.quantity = quantity;
         this.price = price;
+        this.order = order;
+    }
+
+    void setOrder(OrderEntity order) {
         this.order = order;
     }
 

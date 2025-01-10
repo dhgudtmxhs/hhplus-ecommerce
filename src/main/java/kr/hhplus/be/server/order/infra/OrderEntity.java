@@ -52,4 +52,18 @@ public class OrderEntity extends BaseEntity {
         this.status = status;
         this.orderItems = orderItems;
     }
+
+    // setOrderItems 메서드 추가
+    public void setOrderItems(List<OrderItemEntity> orderItems) {
+        this.orderItems = orderItems;
+        if (orderItems != null) {
+            orderItems.forEach(orderItem -> orderItem.setOrder(this)); // 연관 관계 설정
+        }
+    }
+
+    public void addOrderItem(OrderItemEntity orderItem) {
+        orderItems.add(orderItem);
+        orderItem.setOrder(this);
+    }
+
 }

@@ -2,7 +2,6 @@ package kr.hhplus.be.server.order.domain;
 
 import kr.hhplus.be.server.coupon.domain.Coupon;
 import kr.hhplus.be.server.coupon.domain.DiscountType;
-import kr.hhplus.be.server.product.domain.Product;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -18,12 +17,12 @@ public class Order {
     private final Long finalPrice;
     private final Long userCouponId;
     private OrderStatus status;
-    private final List<Product> products;
+    private final List<OrderItem> orderItems;
 
-    public static Order create(Long userId, List<Product> products, Coupon coupon, Long usedPoints) {
+    public static Order create(Long userId, List<OrderItem> orderItems, Coupon coupon, Long usedPoints) {
         // 1. 총 주문 금액 계산
-        Long totalPrice = products.stream()
-                .mapToLong(Product::price)
+        Long totalPrice = orderItems.stream()
+                .mapToLong(item -> item.price() * item.quantity())
                 .sum();
 
         // 2. 쿠폰 할인 계산
@@ -43,7 +42,7 @@ public class Order {
                 finalPrice,
                 (coupon != null) ? coupon.id() : null,
                 OrderStatus.PENDING,
-                products // Product 리스트 전달
+                orderItems
         );
     }
 
