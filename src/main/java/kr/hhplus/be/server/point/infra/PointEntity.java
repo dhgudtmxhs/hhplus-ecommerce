@@ -2,6 +2,7 @@ package kr.hhplus.be.server.point.infra;
 
 import jakarta.persistence.*;
 import kr.hhplus.be.server.common.BaseEntity;
+import kr.hhplus.be.server.user.infra.UserEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,14 +19,16 @@ public class PointEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private UserEntity user;
 
     private Long point;
 
     @Builder
-    public PointEntity(Long id, Long userId, Long point) {
+    public PointEntity(Long id, UserEntity user, Long point) {
         this.id = id;
-        this.userId = userId;
+        this.user = user;
         this.point = point;
     }
 
