@@ -23,17 +23,17 @@ public record Point(
         if (point == null) {
             throw new IllegalArgumentException("포인트는 null일 수 없습니다.");
         }
-        if (point <= 0) {
+        if (point < 0) {
             throw new IllegalArgumentException("포인트는 음수일 수 없습니다.");
         }
     }
 
+    // 포인트 차감
     public Point deduct(Long amount) {
         if (this.point < amount) {
             throw new IllegalArgumentException("차감할 포인트가 보유 포인트보다 많습니다.");
         }
-        return new Point(null, this.userId, this.point - amount);
+        return new Point(this.id, this.userId, this.point - amount); // id 유지
     }
-
 
 }

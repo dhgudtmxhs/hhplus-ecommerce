@@ -58,7 +58,7 @@ public class OrderFacade {
             orderService.updateOrderStatus(order, true);
 
             // 포인트 차감
-            pointService.deductPoints(user.id(), payment.finalPrice());
+            Point deductedPoint = pointService.deductPoint(user.id(), payment.finalPrice());
 
             // 쿠폰 사용
             if (coupon != null) {

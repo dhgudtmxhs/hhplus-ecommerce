@@ -14,10 +14,10 @@ public class PointTest {
     }
 
     @Test
-    void 포인트가_null이거나_0미만인_경우_예외가_발생한다() {
+    void 포인트가_null이거나_음수인_경우_예외가_발생한다() {
         // Given && When && Then
         assertThrows(IllegalArgumentException.class, () -> Point.validatePoint(null));
-        assertThrows(IllegalArgumentException.class, () -> Point.validatePoint(0L));
+        assertThrows(IllegalArgumentException.class, () -> Point.validatePoint(-1L));
     }
 
     @Test

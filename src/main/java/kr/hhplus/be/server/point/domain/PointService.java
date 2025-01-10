@@ -33,7 +33,7 @@ public class PointService {
     }
 
     @Transactional
-    public void deductPoints(Long userId, Long amount) {
+    public Point deductPoint(Long userId, Long amount) {
         Point.validatePoint(amount);
 
         Point point = pointRepository.findByUserIdForUpdate(userId)
@@ -42,5 +42,7 @@ public class PointService {
         Point updatedPoint = point.deduct(amount);
 
         pointRepository.save(updatedPoint);
+
+        return updatedPoint;
     }
 }

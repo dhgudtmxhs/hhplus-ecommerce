@@ -93,7 +93,7 @@ public class PointServiceTest {
         when(pointRepository.findByUserIdForUpdate(userId)).thenReturn(Optional.of(point));
 
         // When
-        pointService.deductPoints(userId, deductAmount);
+        pointService.deductPoint(userId, deductAmount);
 
         // Then
         verify(pointRepository).save(any(Point.class));
@@ -108,7 +108,7 @@ public class PointServiceTest {
         when(pointRepository.findByUserIdForUpdate(userId)).thenReturn(Optional.empty());
 
         // When && Then
-        assertThrows(NoSuchElementException.class, () -> pointService.deductPoints(userId, deductAmount));
+        assertThrows(NoSuchElementException.class, () -> pointService.deductPoint(userId, deductAmount));
     }
 
     @Test
@@ -121,7 +121,7 @@ public class PointServiceTest {
         when(pointRepository.findByUserIdForUpdate(userId)).thenReturn(Optional.of(point));
 
         // When && Then
-        assertThrows(IllegalArgumentException.class, () -> pointService.deductPoints(userId, deductAmount));
+        assertThrows(IllegalArgumentException.class, () -> pointService.deductPoint(userId, deductAmount));
     }
 
 

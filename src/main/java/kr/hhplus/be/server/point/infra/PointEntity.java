@@ -12,7 +12,10 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = "point")
+@Table(
+        name = "point",
+        uniqueConstraints = @UniqueConstraint(columnNames = "user_id")
+)
 public class PointEntity extends BaseEntity {
 
     @Id

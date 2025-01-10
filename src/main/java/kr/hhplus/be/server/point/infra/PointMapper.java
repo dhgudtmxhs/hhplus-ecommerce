@@ -13,11 +13,12 @@ public interface PointMapper {
     @Mapping(target = "userId", source = "user.id")
     Point toDomain(PointEntity entity);
 
-    @Mapping(target = "user", source = "userId")
-    PointEntity toEntity(Point domain);
-
-    default UserEntity map(Long userId) {
-        return UserEntity.builder().id(userId).build();
+    default PointEntity toEntity(Point domain) {
+        return PointEntity.builder()
+                .id(domain.id()) // 기존 ID가 있는 경우 포함
+                .user(UserEntity.builder().id(domain.userId()).build())
+                .point(domain.point())
+                .build();
     }
-
 }
+
