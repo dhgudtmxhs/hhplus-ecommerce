@@ -60,7 +60,8 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public Optional<Product> findByIdForUpdate(Long productId) {
-        return productJpaRepository.findByIdForUpdate(productId);
+        return productJpaRepository.findByIdForUpdate(productId)
+                .map(productMapper::toDomain);
     }
 
     @Override

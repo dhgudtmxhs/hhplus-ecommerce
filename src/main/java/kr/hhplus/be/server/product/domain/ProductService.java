@@ -35,9 +35,10 @@ public class ProductService {
                     Product product = productRepository.findByIdForUpdate(productOrder.productId())
                             .orElseThrow(() -> new NoSuchElementException("상품 ID " + productOrder.productId() + "가 없습니다"));
 
-                    product.reduceStock(productOrder.quantity());
+                    // 재고 차감 후 새로운 도메인 객체 생성
+                    Product updatedProduct = product.reduceStock(productOrder.quantity());
 
-                    productRepository.save(product);
+                    productRepository.save(updatedProduct);
 
                     return product;
                 })
