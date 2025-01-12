@@ -1,41 +1,43 @@
 package kr.hhplus.be.server.product.interfaces;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import kr.hhplus.be.server.product.application.ProductFacade;
+import kr.hhplus.be.server.product.application.ProductInfo;
+import kr.hhplus.be.server.product.application.ProductListInfo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/products")
+@RequiredArgsConstructor
 @Tag(name = "Product API", description = "상품 관련 API")
 public class ProductController {
 
-    @Operation(summary = "상품 조회", description = "특정 상품의 정보를 조회합니다.")
-    @GetMapping("/{productId}")
-    public ResponseEntity<String> getProductById(
-            @Parameter(description = "조회할 상품의 ID", required = true)
-            @PathVariable("productId") String productId) {
+    private final ProductFacade productFacade;
+    private final ProductResponseMapper productResponseMapper;
 
-        if ("product001".equals(productId)) {
-            String mockResponse = "{\"productId\": \"product001\", \"name\": \"상품 A\", \"price\": 5000, \"stock\": 50}";
-            return ResponseEntity.ok(mockResponse);
-        } else {
-            String errorResponse = "{\"message\": \"상품을 찾을 수 없습니다.\"}";
-            return ResponseEntity.status(404).body(errorResponse);
-        }
+    @Operation(summary = "상품 목록 조회", description = "상품 목록을 페이지 단위로 조회합니다.")
+    @GetMapping
+    public ResponseEntity<ProductListResponse> getProducts(@RequestParam(defaultValue = "0") int page,
+                                                           @RequestParam(defaultValue = "10") int size) {
+
+        ProductListInfo productListInfo = productFacade.getProducts(page, size);
+        ProductListResponse response = productResponseMapper.toProductListResponse(productListInfo);
+
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "인기 상품 조회", description = "최근 3일 기준 상위 5개의 인기 상품을 조회합니다.")
     @GetMapping("/popular")
-    public ResponseEntity<String> getPopularProducts(
-            @RequestParam(defaultValue = "3") int days,
-            @RequestParam(defaultValue = "5") int limit) {
+    public ResponseEntity<List<ProductResponse>> getPopularProducts() {
 
-        String mockResponse = "["
-                + "{\"productId\": \"product001\", \"name\": \"상품 A\", \"sales\": 100}, "
-                + "{\"productId\": \"product003\", \"name\": \"상품 C\", \"sales\": 80}"
-                + "]";
-        return ResponseEntity.ok(mockResponse);
+        List<ProductInfo> popularProductInfos = productFacade.getPopularProducts();
+        List<ProductResponse> responses = productResponseMapper.toProductResponseList(popularProductInfos);
+
+        return ResponseEntity.ok(responses);
     }
 }
