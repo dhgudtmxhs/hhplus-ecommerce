@@ -33,6 +33,7 @@ public class PointControllerLoggingTest {
 
         // When
         mockMvc.perform(get("/api/point/{userId}", nonExistentUserId)
+                        .header("User-Agent", "MockMvc Test Client") // User-Agent 헤더 추가
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value(ErrorCode.USER_NOT_FOUND.getCode()))
