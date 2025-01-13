@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.point.domain;
 
+import kr.hhplus.be.server.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +15,7 @@ public class PointService {
 
     public Point getPoint(Long userId) {
         return pointRepository.findByUserId(userId)
-                .orElseThrow(() -> new NoSuchElementException("사용자의 포인트를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NoSuchElementException(ErrorCode.POINT_NOT_FOUND_CODE));
     }
 
     @Transactional
@@ -23,7 +24,7 @@ public class PointService {
         Point.validatePoint(amount);
 
         Point point = pointRepository.findByUserIdForUpdate(userId)
-                .orElseThrow(() -> new NoSuchElementException("사용자의 포인트를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NoSuchElementException(ErrorCode.POINT_NOT_FOUND_CODE));
 
         Point updatedPoint = point.chargePoint(amount);
 
@@ -37,7 +38,7 @@ public class PointService {
         Point.validatePoint(amount);
 
         Point point = pointRepository.findByUserIdForUpdate(userId)
-                .orElseThrow(() -> new NoSuchElementException("사용자의 포인트를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NoSuchElementException(ErrorCode.POINT_NOT_FOUND_CODE));
 
         Point updatedPoint = point.deduct(amount);
 

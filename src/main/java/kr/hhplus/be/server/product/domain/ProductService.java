@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.product.domain;
 
+import kr.hhplus.be.server.common.exception.ErrorCode;
 import kr.hhplus.be.server.order.application.ProductOrderCommand;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,7 @@ public class ProductService {
                 .map(productOrder -> {
 
                     Product product = productRepository.findByIdForUpdate(productOrder.productId())
-                            .orElseThrow(() -> new NoSuchElementException("상품 ID " + productOrder.productId() + "가 없습니다"));
+                            .orElseThrow(() -> new NoSuchElementException(ErrorCode.PRODUCT_NOT_FOUND_CODE));
 
                     // 재고 차감 후 새로운 도메인 객체 생성
                     Product updatedProduct = product.reduceStock(productOrder.quantity());
@@ -50,7 +51,7 @@ public class ProductService {
     public void restoreStock(List<ProductOrderCommand> products) {
         products.forEach(productOrder -> {
             Product product = productRepository.findByIdForUpdate(productOrder.productId())
-                    .orElseThrow(() -> new NoSuchElementException("상품 ID " + productOrder.productId() + "가 없습니다"));
+                    .orElseThrow(() -> new NoSuchElementException(ErrorCode.PRODUCT_NOT_FOUND_CODE));
 
             // 차감된 수량만큼 재고 복원
             product = product.addStock(productOrder.quantity());

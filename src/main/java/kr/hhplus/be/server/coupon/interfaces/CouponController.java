@@ -26,9 +26,9 @@ public class CouponController {
     private final CouponResponseMapper couponResponseMapper;
 
     @Operation(summary = "보유 쿠폰 조회", description = "사용자가 보유한 쿠폰 목록을 조회합니다.")
-    @GetMapping("/{userId}")
+    @GetMapping(value = {"/{userId}", "/"})
     public ResponseEntity<List<UserCouponResponse>> getUserCoupons(@Parameter(description = "사용자 ID", required = true)
-                                                                   @PathVariable("userId") @NotNull Long userId) {
+                                                                   @PathVariable(value = "userId", required = false) Long userId) {
 
         CouponCommand command = new CouponCommand(userId);
         List<UserCouponInfo> userCoupons = couponFacade.getUserCoupons(command);

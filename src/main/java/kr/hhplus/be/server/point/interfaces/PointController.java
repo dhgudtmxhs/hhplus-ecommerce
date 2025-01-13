@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import kr.hhplus.be.server.common.exception.ErrorCode;
 import kr.hhplus.be.server.point.application.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +21,10 @@ public class PointController {
     private final ChargePointRequestMapper chargePointRequestMapper;
     private final PointResponseMapper pointResponseMapper;
 
-
     @Operation(summary = "포인트 조회", description = "사용자의 포인트를 조회합니다.")
-    @GetMapping("/{userId}")
-    public ResponseEntity<PointResponse> getPoint(@Parameter(description = "사용자 ID", required = true)
-                                                  @PathVariable("userId") @NotNull Long userId) {
+    @GetMapping(value = {"/{userId}", "/"})
+    public ResponseEntity<PointResponse> getPoint(@Parameter(description = "사용자 ID", required = false)
+                                                  @PathVariable(value = "userId", required = false) Long userId) {
 
         PointCommand command = new PointCommand(userId);
         PointInfo info = pointFacade.getPoint(command);

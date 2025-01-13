@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.user.domain;
 
+import kr.hhplus.be.server.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,6 @@ public class UserService {
         User.validateId(userId);
 
         return userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("유저가 없습니다. 유저아이디 : " + userId));
+                .orElseThrow( () -> new NoSuchElementException(ErrorCode.USER_NOT_FOUND.getCode()) );
     }
 }

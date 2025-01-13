@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.order.domain;
 
+import kr.hhplus.be.server.common.exception.ErrorCode;
 import kr.hhplus.be.server.coupon.domain.Coupon;
 import kr.hhplus.be.server.coupon.domain.DiscountType;
 import lombok.AllArgsConstructor;
@@ -31,7 +32,7 @@ public class Order {
         // 3. 최종 결제 금액 계산 (포인트 적용)
         Long finalPrice = totalPrice - discountAmount - usedPoints;
         if (finalPrice < 0) {
-            throw new IllegalArgumentException("최종 결제 금액은 0원 이상이어야 합니다.");
+            throw new IllegalArgumentException(ErrorCode.ORDER_FINAL_PRICE_INVALID_CODE); // ErrorCode 사용
         }
 
         // 4. Order 객체 생성
@@ -61,21 +62,21 @@ public class Order {
     // 상태 변경 메서드
     public void markAsPaid() {
         if (this.status != OrderStatus.PENDING) {
-            throw new IllegalStateException("결제 대기 상태에서만 결제를 완료할 수 있습니다.");
+            throw new IllegalStateException(ErrorCode.ORDER_STATUS_CHANGE_INVALID_CODE);
         }
         this.status = OrderStatus.PAID;
     }
 
     public void markAsFailed() {
         if (this.status != OrderStatus.PENDING) {
-            throw new IllegalStateException("결제 대기 상태에서만 결제 실패로 변경할 수 있습니다.");
+            throw new IllegalStateException(ErrorCode.ORDER_STATUS_CHANGE_INVALID_CODE);
         }
         this.status = OrderStatus.FAILED;
     }
 
     public void cancelOrder() {
         if (this.status == OrderStatus.PAID) {
-            throw new IllegalStateException("결제 완료된 주문은 취소할 수 없습니다.");
+            throw new IllegalStateException(ErrorCode.ORDER_CANCEL_INVALID_CODE);
         }
         this.status = OrderStatus.CANCELLED;
     }

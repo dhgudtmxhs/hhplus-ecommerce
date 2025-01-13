@@ -1,5 +1,7 @@
 package kr.hhplus.be.server.product.domain;
 
+import kr.hhplus.be.server.common.exception.ErrorCode;
+
 public record Product(
         Long id,
         String name,
@@ -8,28 +10,27 @@ public record Product(
 ) {
     public Product {
         if (price <= 0) {
-            throw new IllegalArgumentException("가격은 0보다 커야 합니다.");
+            throw new IllegalArgumentException(ErrorCode.PRODUCT_PRICE_INVALID_CODE);
         }
         if (stock < 0) {
-            throw new IllegalArgumentException("재고는 0이상이어야 합니다.");
+            throw new IllegalArgumentException(ErrorCode.PRODUCT_STOCK_INVALID_CODE);
         }
     }
 
     public Product reduceStock(Long quantity) {
         if (quantity <= 0) {
-            throw new IllegalArgumentException("차감할 수량은 0보다 커야 합니다.");
+            throw new IllegalArgumentException(ErrorCode.PRODUCT_QUANTITY_INVALID_CODE);
         }
         if (this.stock < quantity) {
-            throw new IllegalArgumentException("상품 ID " + this.id + "의 재고가 부족합니다. 현재 재고: " + this.stock);
+            throw new IllegalArgumentException(ErrorCode.PRODUCT_STOCK_INSUFFICIENT_CODE);
         }
         return new Product(this.id, this.name, this.price, this.stock - quantity);
     }
 
     public Product addStock(Long quantity) {
         if (quantity <= 0) {
-            throw new IllegalArgumentException("추가할 수량은 0보다 커야 합니다.");
+            throw new IllegalArgumentException(ErrorCode.PRODUCT_QUANTITY_INVALID_CODE);
         }
         return new Product(this.id, this.name, this.price, this.stock + quantity);
     }
-
 }

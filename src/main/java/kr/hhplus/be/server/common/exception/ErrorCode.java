@@ -27,15 +27,18 @@ public enum ErrorCode {
     PRODUCT_QUANTITY_INVALID("E011", "상품 수량은 0보다 커야 합니다."),
     PRODUCT_STOCK_INSUFFICIENT("E012", "상품 재고가 부족합니다."),
     PRODUCT_NOT_FOUND("E013", "상품을 찾을 수 없습니다."),
+    PRODUCTS_LIST_EMPTY("E014", "주문할 상품 목록이 비어 있습니다."),
 
-    COUPON_ALREADY_USED_OR_NOT_FOUND("E014", "쿠폰이 이미 사용되었거나 존재하지 않습니다."),
-    COUPON_STOCK_INSUFFICIENT("E015", "쿠폰 재고가 부족합니다."),
-    COUPON_NOT_FOUND("E016", "쿠폰을 찾을 수 없습니다."),
+    COUPON_ID_NULL("E015", "쿠폰 ID가 NULL 입니다."),
+    COUPON_ID_INVALID("E016", "쿠폰 ID는 0보다 커야 합니다."),
+    COUPON_CODE_NULL("E017", "쿠폰 코드가 NULL 입니다."),
+    COUPON_ALREADY_USED_OR_NOT_FOUND("E018", "쿠폰이 이미 사용되었거나 존재하지 않습니다."),
+    COUPON_STOCK_INSUFFICIENT("E019", "쿠폰 재고가 부족합니다."),
+    COUPON_NOT_FOUND("E020", "쿠폰을 찾을 수 없습니다."),
 
-    ORDER_FINAL_PRICE_INVALID("E017", "최종 결제 금액은 0원 이상이어야 합니다."),
-    ORDER_STATUS_CHANGE_INVALID("E018", "결제 대기 상태에서만 상태 변경이 가능합니다."),
-    ORDER_CANCEL_INVALID("E019", "결제 완료된 주문은 취소할 수 없습니다."),
-
+    ORDER_FINAL_PRICE_INVALID("E021", "최종 결제 금액은 0원 이상이어야 합니다."),
+    ORDER_STATUS_CHANGE_INVALID("E022", "결제 대기 상태에서만 상태 변경이 가능합니다."),
+    ORDER_CANCEL_INVALID("E023", "결제 완료된 주문은 취소할 수 없습니다."),
 
     INTERNAL_SERVER_ERROR("E999", "예상치 못한 오류가 발생했습니다.");
 
@@ -54,14 +57,18 @@ public enum ErrorCode {
     public static final String PRODUCT_QUANTITY_INVALID_CODE = "E011";
     public static final String PRODUCT_STOCK_INSUFFICIENT_CODE = "E012";
     public static final String PRODUCT_NOT_FOUND_CODE = "E013";
+    public static final String PRODUCTS_LIST_EMPTY_CODE = "E014";
 
-    public static final String COUPON_ALREADY_USED_OR_NOT_FOUND_CODE = "E014";
-    public static final String COUPON_STOCK_INSUFFICIENT_CODE = "E015";
-    public static final String COUPON_NOT_FOUND_CODE = "E016";
+    public static final String COUPON_ID_NULL_CODE = "E015";
+    public static final String COUPON_ID_INVALID_CODE = "E016";
+    public static final String COUPON_CODE_NULL_CODE = "E017";
+    public static final String COUPON_ALREADY_USED_OR_NOT_FOUND_CODE = "E018";
+    public static final String COUPON_STOCK_INSUFFICIENT_CODE = "E019";
+    public static final String COUPON_NOT_FOUND_CODE = "E020";
 
-    public static final String ORDER_FINAL_PRICE_INVALID_CODE = "E017";
-    public static final String ORDER_STATUS_CHANGE_INVALID_CODE = "E018";
-    public static final String ORDER_CANCEL_INVALID_CODE = "E019";
+    public static final String ORDER_FINAL_PRICE_INVALID_CODE = "E021";
+    public static final String ORDER_STATUS_CHANGE_INVALID_CODE = "E022";
+    public static final String ORDER_CANCEL_INVALID_CODE = "E023";
 
     public static final String INTERNAL_SERVER_ERROR_CODE = "E999";
 

@@ -1,5 +1,7 @@
 package kr.hhplus.be.server.point.domain;
 
+import kr.hhplus.be.server.common.exception.ErrorCode;
+
 public record Point(
         Long id,
         Long userId,
@@ -13,7 +15,7 @@ public record Point(
     public Point chargePoint(Long amount) {
         Long newPoint = this.point + amount;
         if (newPoint > MAX_POINT) {
-            throw new IllegalArgumentException("충전 후 포인트는 최대 천만원을 초과할 수 없습니다.");
+            throw new IllegalArgumentException(ErrorCode.POINT_MAX_EXCEED_CODE);
         }
         return new Point(this.id, this.userId, newPoint);
     }
@@ -21,17 +23,17 @@ public record Point(
     // 포인트 검증
     public static void validatePoint(Long point) {
         if (point == null) {
-            throw new IllegalArgumentException("포인트는 null일 수 없습니다.");
+            throw new IllegalArgumentException(ErrorCode.POINT_CHARGE_AMOUNT_NULL_CODE);
         }
         if (point < 0) {
-            throw new IllegalArgumentException("포인트는 음수일 수 없습니다.");
+            throw new IllegalArgumentException(ErrorCode.POINT_CHARGE_AMOUNT_INVALID_CODE);
         }
     }
 
     // 포인트 차감
     public Point deduct(Long amount) {
         if (this.point < amount) {
-            throw new IllegalArgumentException("차감할 포인트가 보유 포인트보다 많습니다.");
+            throw new IllegalArgumentException(ErrorCode.POINT_DEDUCT_EXCEED_CODE);
         }
         return new Point(this.id, this.userId, this.point - amount); // id 유지
     }

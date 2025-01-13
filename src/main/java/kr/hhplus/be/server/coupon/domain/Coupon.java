@@ -1,5 +1,7 @@
 package kr.hhplus.be.server.coupon.domain;
 
+import kr.hhplus.be.server.common.exception.ErrorCode;
+
 public record Coupon(
         Long id,
         String couponCode,
@@ -9,21 +11,15 @@ public record Coupon(
         Long issuedCount
 ) {
 
-    public Coupon {
-        validateStock(issuedCount, usageLimit);
-    }
-
     public Coupon incrementIssuedCount() {
         Long newIssuedCount = this.issuedCount + 1;
         return new Coupon(this.id, this.couponCode, this.discountType, this.discountAmount, this.usageLimit, newIssuedCount);
     }
 
-    private void validateStock(Long issuedCount, Long usageLimit) {
-        if (issuedCount >= usageLimit) {
-            throw new IllegalStateException("쿠폰 재고가 부족합니다.");
+    public void validateStock() {
+        if (this.issuedCount >= this.usageLimit) {
+            throw new IllegalStateException(ErrorCode.COUPON_STOCK_INSUFFICIENT_CODE);
         }
     }
-
-
 
 }
