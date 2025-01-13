@@ -1,8 +1,7 @@
 package kr.hhplus.be.server.payment.infra;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.common.BaseEntity;
-import kr.hhplus.be.server.payment.domain.Payment;
+import kr.hhplus.be.server.common.entity.BaseEntity;
 import kr.hhplus.be.server.payment.domain.PaymentMethod;
 import kr.hhplus.be.server.payment.domain.PaymentStatus;
 import lombok.*;

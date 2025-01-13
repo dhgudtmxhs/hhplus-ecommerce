@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.order.infra;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.common.BaseEntity;
+import kr.hhplus.be.server.common.entity.BaseEntity;
 import kr.hhplus.be.server.product.infra.ProductEntity;
 import lombok.Builder;
 import lombok.Getter;

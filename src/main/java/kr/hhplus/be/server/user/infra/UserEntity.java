@@ -3,13 +3,10 @@ package kr.hhplus.be.server.user.infra;
 import jakarta.persistence.*;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Column;
-import kr.hhplus.be.server.common.BaseEntity;
+import kr.hhplus.be.server.common.entity.BaseEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor

@@ -1,12 +1,10 @@
 package kr.hhplus.be.server.product.infra;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.common.BaseEntity;
+import kr.hhplus.be.server.common.entity.BaseEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor

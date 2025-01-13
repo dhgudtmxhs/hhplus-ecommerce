@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.order.infra;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.common.BaseEntity;
+import kr.hhplus.be.server.common.entity.BaseEntity;
 import kr.hhplus.be.server.coupon.infra.UserCouponEntity;
 import kr.hhplus.be.server.order.domain.OrderStatus;
 import kr.hhplus.be.server.user.infra.UserEntity;
@@ -9,7 +9,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
