@@ -62,6 +62,9 @@ dependencies {
 	implementation("com.querydsl:querydsl-jpa:$querydslVersion:jakarta")
 	annotationProcessor("com.querydsl:querydsl-apt:$querydslVersion:jakarta")
 	annotationProcessor("jakarta.persistence:jakarta.persistence-api:3.1.0")
+
+	// Spring Validator
+	implementation("org.springframework.boot:spring-boot-starter-validation")
 }
 
 val querydslDir = "${project.buildDir}/generated/sources/annotationProcessor/java/main"
