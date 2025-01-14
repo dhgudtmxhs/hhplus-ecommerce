@@ -13,9 +13,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     public User getUser(Long userId) {
-        User.validateId(userId);
-
         return userRepository.findById(userId)
-                .orElseThrow( () -> new NoSuchElementException(ErrorCode.USER_NOT_FOUND.getCode()) );
+                .orElseThrow( () -> new NoSuchElementException(ErrorCode.USER_NOT_FOUND_CODE ));
     }
 }
