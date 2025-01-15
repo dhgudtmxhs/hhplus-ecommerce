@@ -8,13 +8,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class PaymentRepositoryImpl implements PaymentRepository {
-    private final PaymentJpaRepository paymentJpaRepository; // JPA Repository
-    private final PaymentMapper paymentMapper;               // MapStruct Mapper
+    private final PaymentJpaRepository paymentJpaRepository;
 
     @Override
     public Payment save(Payment payment) {
-        PaymentEntity savedEntity = paymentJpaRepository.save(paymentMapper.toEntity(payment));
-
-        return paymentMapper.toDomain(savedEntity);
+        return paymentJpaRepository.save(payment);
     }
 }

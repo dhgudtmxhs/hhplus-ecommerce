@@ -9,7 +9,6 @@ import kr.hhplus.be.server.order.domain.OrderRepository;
 import kr.hhplus.be.server.order.domain.OrderService;
 import kr.hhplus.be.server.point.domain.Point;
 import kr.hhplus.be.server.product.domain.Product;
-import kr.hhplus.be.server.user.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -18,7 +17,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class OrderServiceTest {
@@ -31,7 +30,7 @@ public class OrderServiceTest {
 
     private List<Product> products;
     private List<ProductOrderCommand> productOrderCommands;
-    private User user;
+    private Long userId;
     private Coupon coupon;
     private Point point;
 
@@ -39,7 +38,7 @@ public class OrderServiceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        user = new User(1L, "사용자A");
+        userId = 1L;
         products = List.of(
                 new Product(1L, "상품A", 1000L, 10L),
                 new Product(2L, "상품B", 1500L, 5L)
@@ -49,20 +48,21 @@ public class OrderServiceTest {
                 new ProductOrderCommand(2L, 1L)  // 상품B 1개
         );
         coupon = new Coupon(1L, "COUPON1", DiscountType.FIXED, 500L, 10L, 1L);
-        point = new Point(1L, user.id(), 100L);    }
+        point = new Point(1L, 1L, 100L); // userId 대신 userId 필드와 point 값만 사용
+    }
 
     @Test
     void 유효한_정보로_주문을_생성하면_정상적으로_저장된다() {
         // Given
-        OrderItem orderItem1 = new OrderItem(null, products.get(0).id(), products.get(0).price(), 2L); // 상품A 2개
-        OrderItem orderItem2 = new OrderItem(null, products.get(1).id(), products.get(1).price(), 1L); // 상품B 1개
+        OrderItem orderItem1 = new OrderItem(null, products.get(0).getId(), products.get(0).getPrice(), 2L);
+        OrderItem orderItem2 = new OrderItem(null, products.get(1).getId(), products.get(1).getPrice(), 1L);
         List<OrderItem> orderItems = List.of(orderItem1, orderItem2);
 
-        Order expectedOrder = Order.create(user.id(), orderItems, coupon, point.point());
+        Order expectedOrder = Order.create(userId, orderItems, coupon.getId(), coupon.getDiscountAmount(), point.getPoint());
         when(orderRepository.save(any(Order.class))).thenReturn(expectedOrder);
 
         // When
-        Order result = orderService.createOrder(user, products, coupon, point, productOrderCommands);
+        Order result = orderService.createOrder(userId, products, coupon, point);
 
         // Then
         assertEquals(expectedOrder, result);

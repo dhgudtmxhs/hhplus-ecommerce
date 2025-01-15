@@ -12,23 +12,20 @@ import java.util.Optional;
 public class PointRepositoryImpl implements PointRepository {
 
     private final PointJpaRepository pointJpaRepository;
-    private final PointMapper pointMapper;
 
     @Override
     public Optional<Point> findByUserId(Long userId) {
-        return pointJpaRepository.findByUserId(userId)
-                .map(pointMapper::toDomain);
+        return pointJpaRepository.findByUserId(userId);
     }
 
     @Override
     public Optional<Point> findByUserIdForUpdate(Long userId) {
-        return pointJpaRepository.findByUserIdForUpdate(userId)
-                .map(pointMapper::toDomain);
+        return pointJpaRepository.findByUserIdForUpdate(userId);
     }
 
     @Override
     public void save(Point updatedPoint) {
-        pointJpaRepository.save(pointMapper.toEntity(updatedPoint));
+        pointJpaRepository.save(updatedPoint);
     }
 
 }

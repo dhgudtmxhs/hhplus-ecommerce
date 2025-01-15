@@ -37,31 +37,31 @@ public class OrderFacade {
         User user = userService.getUser(command.userId());
 
         // 2. 포인트 조회
-        Point point = pointService.getPoint(user.id());
+        Point point = pointService.getPoint(user.getId());
 
         // 3. 쿠폰 조회
         Coupon coupon = command.couponId() != null
-                ? couponService.getUserCoupon(user.id(), command.couponId()) : null;
+                ? couponService.getUserCoupon(user.getId(), command.couponId()) : null;
 
         // 4. 재고를 차감하며 구매상품 목록 상세 조회
         List<Product> products = productService.reduceStockAndGetProducts(command.products());
 
         // 5. 주문 생성
-        Order order = orderService.createOrder(user, products, coupon, point, command.products());
+        Order order = orderService.createOrder(command.userId(), products, coupon, point);
         // 6. 결제 요청
         Payment payment = paymentService.processPayment(order, point);
 
         // 7. 결제 결과에 따른 변경
-        if (payment.status() == PaymentStatus.SUCCESS) {
+        if (payment.getStatus() == PaymentStatus.SUCCESS) {
             // 주문 상태 변경
             orderService.updateOrderStatus(order, true);
 
             // 포인트 차감
-            Point deductedPoint = pointService.deductPoint(user.id(), payment.finalPrice());
+            Point deductedPoint = pointService.deductPoint(user.getId(), payment.getFinalPrice());
 
             // 쿠폰 사용
             if (coupon != null) {
-                couponService.useCoupon(user.id(), coupon.id());
+                couponService.useCoupon(user.getId(), coupon.getId());
             }
         } else {
             // 결제 실패 시 주문 상태 변경
@@ -79,7 +79,7 @@ public class OrderFacade {
                 order.getId(),
                 order.getFinalPrice(),
                 order.getStatus().toString(),
-                payment.status().toString(),
+                payment.getStatus().toString(),
                 products
         );
     }

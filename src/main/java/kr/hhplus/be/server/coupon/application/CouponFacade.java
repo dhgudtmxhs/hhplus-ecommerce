@@ -20,7 +20,7 @@ public class CouponFacade {
     public List<UserCouponInfo> getUserCoupons(CouponCommand command) {
 
         User user = userService.getUser(command.userId());
-        List<UserCoupon> userCoupons = couponService.getUserCoupons(user.id());
+        List<UserCoupon> userCoupons = couponService.getUserCoupons(user.getId());
 
         return couponInfoMapper.toUserCouponInfoList(userCoupons);
     }
@@ -28,7 +28,7 @@ public class CouponFacade {
     public UserCouponInfo issueCoupon(IssueCouponCommand command) {
 
         User user = userService.getUser(command.userId());
-        UserCoupon issuedCoupon = couponService.issueCoupon(user.id(), command.couponCode());
+        UserCoupon issuedCoupon = couponService.issueCoupon(user.getId(), command.couponCode());
 
         return couponInfoMapper.toUserCouponInfo(issuedCoupon);
     }

@@ -7,6 +7,7 @@ import kr.hhplus.be.server.payment.domain.PaymentRepository;
 import kr.hhplus.be.server.payment.domain.PaymentService;
 import kr.hhplus.be.server.payment.domain.PaymentStatus;
 import kr.hhplus.be.server.point.domain.Point;
+import kr.hhplus.be.server.user.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -34,7 +35,7 @@ public class PaymentServiceTest {
         // Given
         Order order = new Order(1L, 1L, 1000L, 1000L, null, null, null);
         Point point = new Point(1L, 1L, 1500L);
-        Payment expectedPayment = new Payment(null, order.getId(), order.getFinalPrice(), PaymentMethod.POINT, PaymentStatus.SUCCESS);
+        Payment expectedPayment = new Payment(null, order.getId(), order.getFinalPrice(), PaymentMethod.POINT, PaymentStatus.SUCCESS, point.getPoint());
 
         when(paymentRepository.save(any(Payment.class))).thenReturn(expectedPayment);
 
@@ -42,7 +43,7 @@ public class PaymentServiceTest {
         Payment result = paymentService.processPayment(order, point);
 
         // Then
-        assertEquals(PaymentStatus.SUCCESS, result.status());
+        assertEquals(PaymentStatus.SUCCESS, result.getStatus());
         verify(paymentRepository).save(any(Payment.class));
     }
 
@@ -51,7 +52,7 @@ public class PaymentServiceTest {
         // Given
         Order order = new Order(1L, 1L, 1000L, 1000L, null, null, null);
         Point point = new Point(1L, 1L, 500L);
-        Payment expectedPayment = new Payment(null, order.getId(), order.getFinalPrice(), PaymentMethod.POINT, PaymentStatus.FAILED);
+        Payment expectedPayment = new Payment(null, order.getId(), order.getFinalPrice(), PaymentMethod.POINT, PaymentStatus.FAILED, point.getPoint());
 
         when(paymentRepository.save(any(Payment.class))).thenReturn(expectedPayment);
 
@@ -59,7 +60,7 @@ public class PaymentServiceTest {
         Payment result = paymentService.processPayment(order, point);
 
         // Then
-        assertEquals(PaymentStatus.FAILED, result.status());
+        assertEquals(PaymentStatus.FAILED, result.getStatus());
         verify(paymentRepository).save(any(Payment.class));
     }
 }

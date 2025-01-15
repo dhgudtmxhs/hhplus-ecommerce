@@ -8,11 +8,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class OrderRepositoryImpl implements OrderRepository {
-    private final OrderJpaRepository orderJpaRepository; // JPA Repository
-    private final OrderMapper orderMapper;               // MapStruct Mapper
+    private final OrderJpaRepository orderJpaRepository;
 
     @Override
     public Order save(Order order) {
-        return orderMapper.toDomain(orderJpaRepository.save(orderMapper.toEntity(order)));
+        return orderJpaRepository.save(order);
     }
 }

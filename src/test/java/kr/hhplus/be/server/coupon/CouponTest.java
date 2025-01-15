@@ -14,18 +14,21 @@ public class CouponTest {
         Coupon coupon = new Coupon(1L, "COUPON1", DiscountType.FIXED, 1000L, 10L, 5L);
 
         // When
-        Coupon updatedCoupon = coupon.incrementIssuedCount();
+        coupon.issue();
 
         // Then
-        assertEquals(6L, updatedCoupon.issuedCount());
+        assertEquals(6L, coupon.getIssuedCount());
     }
 
     @Test
-    void 쿠폰_생성시_발급_횟수가_제한_수량과_같거나_많으면_IllegalStateException_예외가_발생한다() {
-        // Given && When && Then
-        assertThrows(IllegalStateException.class, () -> new Coupon(1L, "COUPON1",  DiscountType.FIXED,1000L, 5L, 5L));
-        assertThrows(IllegalStateException.class, () -> new Coupon(1L, "COUPON1",  DiscountType.PERCENT,10L, 5L, 6L));
-    }
+    void 쿠폰_발급시_발급_횟수가_제한_수량과_같거나_많으면_IllegalStateException_예외가_발생한다() {
+        // Given
+        Coupon coupon1 = new Coupon(1L, "COUPON1", DiscountType.FIXED, 1000L, 5L, 5L); // 발급 횟수 == 제한 수량
+        Coupon coupon2 = new Coupon(1L, "COUPON1", DiscountType.PERCENT, 10L, 5L, 6L); // 발급 횟수 > 제한 수량
 
+        // When & Then
+        assertThrows(IllegalStateException.class, coupon1::issue);
+        assertThrows(IllegalStateException.class, coupon2::issue);
+    }
 
 }

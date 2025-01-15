@@ -16,13 +16,13 @@ public class PaymentTest {
         Long orderId = 1L;
         Long finalPrice = 1000L;
         PaymentMethod paymentMethod = PaymentMethod.POINT;
-        Point point = new Point(1L, 1L, 1500L); // 포인트가 결제 금액보다 많음
+        Point point = new Point(null, 1L, 1500L);
 
         // When
-        Payment payment = Payment.create(orderId, finalPrice, paymentMethod, point);
+        Payment payment = Payment.create(orderId, finalPrice, paymentMethod, point.getPoint());
 
         // Then
-        assertEquals(PaymentStatus.SUCCESS, payment.status());
+        assertEquals(PaymentStatus.SUCCESS, payment.getStatus());
     }
 
     @Test
@@ -31,13 +31,13 @@ public class PaymentTest {
         Long orderId = 1L;
         Long finalPrice = 1000L;
         PaymentMethod paymentMethod = PaymentMethod.POINT;
-        Point point = new Point(1L, 1L, 500L); // 포인트가 결제 금액보다 적음
+        Point point = new Point(null, 1L, 500L);
 
         // When
-        Payment payment = Payment.create(orderId, finalPrice, paymentMethod, point);
+        Payment payment = Payment.create(orderId, finalPrice, paymentMethod, point.getPoint());
 
         // Then
-        assertEquals(PaymentStatus.FAILED, payment.status());
+        assertEquals(PaymentStatus.FAILED, payment.getStatus());
     }
 
     @Test
@@ -46,12 +46,12 @@ public class PaymentTest {
         Long orderId = 1L;
         Long finalPrice = 0L;
         PaymentMethod paymentMethod = PaymentMethod.POINT;
-        Point point = new Point(1L, 1L, 500L); // 포인트가 결제 금액보다 많음
+        Point point = new Point(null, 1L, 500L); // 포인트가 결제 금액보다 많음
 
         // When
-        Payment payment = Payment.create(orderId, finalPrice, paymentMethod, point);
+        Payment payment = Payment.create(orderId, finalPrice, paymentMethod, point.getPoint());
 
         // Then
-        assertEquals(PaymentStatus.SUCCESS, payment.status());
+        assertEquals(PaymentStatus.SUCCESS, payment.getStatus());
     }
 }

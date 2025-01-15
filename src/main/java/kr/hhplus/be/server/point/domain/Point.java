@@ -1,26 +1,41 @@
 package kr.hhplus.be.server.point.domain;
 
+import jakarta.persistence.*;
+import kr.hhplus.be.server.common.entity.BaseEntity;
 import kr.hhplus.be.server.common.exception.ErrorCode;
+import kr.hhplus.be.server.user.domain.User;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-public record Point(
-        Long id,
-        Long userId,
-        Long point
-) {
+@Getter
+@NoArgsConstructor
+@Entity
+@Table(
+        name = "point",
+        uniqueConstraints = @UniqueConstraint(columnNames = "user_id")
+)
+public class Point extends BaseEntity {
 
-    // 최대 포인트
-    private static final Long MAX_POINT = 10_000_000L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    // 포인트 충전
-    public Point chargePoint(Long amount) {
-        Long newPoint = this.point + amount;
-        if (newPoint > MAX_POINT) {
-            throw new IllegalArgumentException(ErrorCode.POINT_MAX_EXCEED_CODE);
-        }
-        return new Point(this.id, this.userId, newPoint);
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
+
+    @Column(nullable = false)
+    private Long point;
+
+    @Builder
+    public Point(Long id, Long userId, Long point) {
+        this.id = id;
+        this.userId = userId;
+        this.point = point;
     }
 
-    // 포인트 검증
+    private static final Long MAX_POINT = 10_000_000L;
+
     public static void validatePoint(Long point) {
         if (point == null) {
             throw new IllegalArgumentException(ErrorCode.POINT_CHARGE_AMOUNT_NULL_CODE);
@@ -30,12 +45,20 @@ public record Point(
         }
     }
 
-    // 포인트 차감
-    public Point deduct(Long amount) {
+    public void charge(Long amount) {
+        Long newPoint = this.point + amount;
+        if (newPoint > MAX_POINT) {
+            throw new IllegalArgumentException(ErrorCode.POINT_MAX_EXCEED_CODE);
+        }
+        this.point = newPoint;
+    }
+
+    public void deduct(Long amount) {
         if (this.point < amount) {
             throw new IllegalArgumentException(ErrorCode.POINT_DEDUCT_EXCEED_CODE);
         }
-        return new Point(this.id, this.userId, this.point - amount); // id 유지
+        this.point -= amount;
     }
+
 
 }

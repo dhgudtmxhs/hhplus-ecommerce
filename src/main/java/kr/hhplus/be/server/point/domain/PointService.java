@@ -20,17 +20,15 @@ public class PointService {
 
     @Transactional
     public Point chargePoint(Long userId, Long amount) {
-
         Point.validatePoint(amount);
 
         Point point = pointRepository.findByUserIdForUpdate(userId)
                 .orElseThrow(() -> new NoSuchElementException(ErrorCode.POINT_NOT_FOUND_CODE));
 
-        Point updatedPoint = point.chargePoint(amount);
+        point.charge(amount);
+        pointRepository.save(point);
 
-        pointRepository.save(updatedPoint);
-
-        return updatedPoint;
+        return point;
     }
 
     @Transactional
@@ -40,10 +38,9 @@ public class PointService {
         Point point = pointRepository.findByUserIdForUpdate(userId)
                 .orElseThrow(() -> new NoSuchElementException(ErrorCode.POINT_NOT_FOUND_CODE));
 
-        Point updatedPoint = point.deduct(amount);
+        point.deduct(amount);
+        pointRepository.save(point);
 
-        pointRepository.save(updatedPoint);
-
-        return updatedPoint;
+        return point;
     }
 }

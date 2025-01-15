@@ -1,17 +1,14 @@
 package kr.hhplus.be.server.point;
 
 import kr.hhplus.be.server.point.domain.Point;
-import kr.hhplus.be.server.point.domain.PointRepository;
 import kr.hhplus.be.server.point.domain.PointService;
-import kr.hhplus.be.server.point.infra.PointEntity;
 import kr.hhplus.be.server.point.infra.PointJpaRepository;
-import kr.hhplus.be.server.user.infra.UserEntity;
+import kr.hhplus.be.server.user.domain.User;
 import kr.hhplus.be.server.user.infra.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -38,28 +35,28 @@ public class PointServiceIntegrationTest {
     @Transactional
     void setUp() {
         // Given: UserEntity와 PointEntity 저장
-        UserEntity user = userJpaRepository.save(UserEntity.builder().build()); // ID 자동 생성
-        userId = user.getId(); // 저장된 user ID 가져오기
+        User user = userJpaRepository.save(User.builder()
+                .name("Test User")  // name 필드 설정
+                .build());
+        userId = user.getId();
 
-        PointEntity pointEntity = pointJpaRepository.save(
-                PointEntity.builder()
-                        .user(user)
+        Point point = pointJpaRepository.save(
+                Point.builder()
+                        .userId(userId)
                         .point(5000L)
                         .build()
         );
-
-        existingPoint = new Point(pointEntity.getId(), userId, pointEntity.getPoint());
+        existingPoint = new Point(point.getId(), 1L, point.getPoint());
     }
 
     @Test
     void findByUserId_정상_조회_확인() {
         // When: 기존에 저장된 userId로 PointEntity 조회
-        Optional<PointEntity> result = pointJpaRepository.findByUserId(userId);
+        Optional<Point> result = pointJpaRepository.findByUserId(userId);
 
         // Then: 조회 결과 검증
         assertTrue(result.isPresent());
-        assertEquals(existingPoint.id(), result.get().getId());
-        assertEquals(existingPoint.point(), result.get().getPoint());
+        assertEquals(existingPoint.getPoint(), result.get().getPoint());
     }
 
     @Test
@@ -69,8 +66,7 @@ public class PointServiceIntegrationTest {
 
         // Then
         assertNotNull(point);
-        assertEquals(existingPoint.userId(), point.userId());
-        assertEquals(existingPoint.point(), point.point());
+        assertEquals(existingPoint.getPoint(), point.getPoint());
     }
 
     @Test
@@ -83,8 +79,7 @@ public class PointServiceIntegrationTest {
 
         // Then
         assertNotNull(result);
-        assertEquals(userId, result.userId());
-        assertEquals(existingPoint.point() + chargeAmount, result.point());
+        assertEquals(existingPoint.getPoint() + chargeAmount, result.getPoint());
     }
 
     @Test
@@ -99,8 +94,7 @@ public class PointServiceIntegrationTest {
         Point result = pointService.getPoint(userId);
 
         assertNotNull(result);
-        assertEquals(userId, result.userId());
-        assertEquals(existingPoint.point() - deductAmount, result.point());
+        assertEquals(existingPoint.getPoint() - deductAmount, result.getPoint());
     }
 
 

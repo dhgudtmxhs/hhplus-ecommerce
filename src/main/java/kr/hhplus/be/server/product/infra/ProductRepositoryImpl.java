@@ -1,9 +1,10 @@
 package kr.hhplus.be.server.product.infra;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import kr.hhplus.be.server.order.infra.QOrderItemEntity;
+import kr.hhplus.be.server.order.domain.QOrderItem;
 import kr.hhplus.be.server.product.domain.Product;
 import kr.hhplus.be.server.product.domain.ProductRepository;
+import kr.hhplus.be.server.product.domain.QProduct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -16,22 +17,19 @@ import java.util.Optional;
 public class ProductRepositoryImpl implements ProductRepository {
 
     private final ProductJpaRepository productJpaRepository;
-    private final ProductMapper productMapper;
     private final JPAQueryFactory queryFactory;
 
     @Override
     public List<Product> findProducts(int page, int size) {
         int offset = page * size;
 
-        QProductEntity product = QProductEntity.productEntity;
-        List<ProductEntity> productEntities = queryFactory
+        QProduct product = QProduct.product;
+        return queryFactory
                 .selectFrom(product)
                 .orderBy(product.id.asc())
                 .offset(offset)
                 .limit(size)
                 .fetch();
-
-        return productMapper.toDomainList(productEntities);
     }
 
     @Override
@@ -41,34 +39,28 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public List<Product> findPopularProducts() {
-        QProductEntity product = QProductEntity.productEntity;
-        QOrderItemEntity orderItem = QOrderItemEntity.orderItemEntity;
+        QProduct product = QProduct.product;
+        QOrderItem orderItem = QOrderItem.orderItem;
 
         LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);
 
-        List<ProductEntity> popularEntities = queryFactory
+        return queryFactory
                 .selectFrom(product)
-                .innerJoin(orderItem).on(orderItem.product.id.eq(product.id)
+                .innerJoin(orderItem).on(orderItem.productId.eq(product.id)
                         .and(orderItem.createdAt.goe(threeDaysAgo)))
                 .groupBy(product.id)
                 .orderBy(orderItem.quantity.sum().desc())
                 .limit(5)
                 .fetch();
-
-        return productMapper.toDomainList(popularEntities);
     }
 
     @Override
     public Optional<Product> findByIdForUpdate(Long productId) {
-        return productJpaRepository.findByIdForUpdate(productId)
-                .map(productMapper::toDomain);
+        return productJpaRepository.findByIdForUpdate(productId);
     }
 
     @Override
     public void save(Product product) {
-        ProductEntity productEntity = productMapper.toEntity(product);
-        productJpaRepository.save(productEntity);
+        productJpaRepository.save(product);
     }
-
-
 }

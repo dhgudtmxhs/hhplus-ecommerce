@@ -14,10 +14,10 @@ public class UserTest {
     }
 
     @Test
-    void ID가_null이거나_0미만인_경우_IllegalArgumentException_예외가_발생한다() {
+    void ID가_null이거나_0이하인_경우_IllegalArgumentException_예외가_발생한다() {
         // Given && when && then
-        assertThrows(IllegalArgumentException.class, () -> new User(null, "ohs"));
-        assertThrows(IllegalArgumentException.class, () -> new User(0L, "ohs"));
-        assertThrows(IllegalArgumentException.class, () -> new User(-1L, "ohs"));
+        assertThrows(IllegalArgumentException.class, () -> User.validateId(null));
+        assertThrows(IllegalArgumentException.class, () -> User.validateId(0L));
+        assertThrows(IllegalArgumentException.class, () -> User.validateId(-1L));
     }
 }

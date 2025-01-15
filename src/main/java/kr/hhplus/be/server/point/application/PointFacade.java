@@ -17,14 +17,14 @@ public class PointFacade {
 
     public PointInfo getPoint(PointCommand command) {
         User user = userService.getUser(command.userId());
-        Point point = pointService.getPoint(user.id());
+        Point point = pointService.getPoint(user.getId());
 
         return pointInfoMapper.toPointInfo(point);
     }
 
     public ChargePointInfo chargePoint(ChargePointCommand command) {
         User user = userService.getUser(command.userId());
-        Point updatedPoint = pointService.chargePoint(user.id(), command.amount());
+        Point updatedPoint = pointService.chargePoint(user.getId(), command.amount());
 
         return pointInfoMapper.toChargePointInfo(updatedPoint);
     }

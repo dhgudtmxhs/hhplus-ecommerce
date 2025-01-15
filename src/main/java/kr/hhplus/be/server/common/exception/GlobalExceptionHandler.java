@@ -14,7 +14,7 @@ import java.util.NoSuchElementException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Bean validation 예외 처리 (RequestBody 검증)
+    // Bean validation 예외 처리 (RequestBody 검증) 400
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
 
@@ -26,12 +26,12 @@ public class GlobalExceptionHandler {
         ErrorCode error = ErrorCode.fromCode(errorCode);
         ErrorResponse response = new ErrorResponse(error.getCode(), error.getMessage());
 
-        log.warn("MethodArgumentNotValidException 발생 - code: {}, message: {}", error.getCode(), error.getMessage());
+        log.warn("MethodArgumentNotValidException 예외 발생 - code: {}, message: {}", error.getCode(), error.getMessage());
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    // Bean validation 예외 처리 (RequestParam, PathVariable 검증)
+    // Bean validation 예외 처리 (RequestParam, PathVariable 검증) 400
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException ex) {
 
@@ -45,7 +45,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    // IllegalArgumentException 예외 처리
+    // IllegalArgumentException 예외 처리 400
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
         String code = ex.getMessage();
@@ -57,7 +57,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    // NoSuchElementException 예외 처리
+    // NoSuchElementException 예외 처리 404
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<ErrorResponse> handleNoSuchElementException(NoSuchElementException ex) {
 
@@ -70,7 +70,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
-    // 핸들링 되지 않은 예외 처리
+    // 핸들링 되지 않은 예외 처리 500
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception ex) {
         ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;

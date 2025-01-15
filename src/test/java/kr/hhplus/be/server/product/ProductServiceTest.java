@@ -44,7 +44,7 @@ public class ProductServiceTest {
 
         // Then
         assertEquals(2, result.size());
-        assertEquals("상품A", result.get(0).name());
+        assertEquals("상품A", result.get(0).getName());
         verify(productRepository).findProducts(page, size);
     }
 
@@ -79,7 +79,7 @@ public class ProductServiceTest {
 
         // Then
         assertEquals(5, result.size());
-        assertEquals("Popular1", result.get(0).name());
+        assertEquals("Popular1", result.get(0).getName());
         verify(productRepository).findPopularProducts();
     }
 

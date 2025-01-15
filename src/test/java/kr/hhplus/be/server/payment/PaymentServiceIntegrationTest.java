@@ -6,6 +6,7 @@ import kr.hhplus.be.server.payment.domain.PaymentRepository;
 import kr.hhplus.be.server.payment.domain.PaymentService;
 import kr.hhplus.be.server.payment.domain.PaymentStatus;
 import kr.hhplus.be.server.point.domain.Point;
+import kr.hhplus.be.server.user.domain.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,8 +34,8 @@ public class PaymentServiceIntegrationTest {
         Payment result = paymentService.processPayment(order, point);
 
         // Then
-        assertEquals(PaymentStatus.SUCCESS, result.status());
-        assertNotNull(result.id());  // 저장되어 ID가 생성되었는지 확인
+        assertEquals(PaymentStatus.SUCCESS, result.getStatus());
+        assertNotNull(result.getId());  // 저장되어 ID가 생성되었는지 확인
     }
 
 }

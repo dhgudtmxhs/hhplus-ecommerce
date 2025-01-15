@@ -22,13 +22,11 @@ public class CouponService {
         Coupon coupon = couponRepository.findByCouponCodeForUpdate(couponCode)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.COUPON_NOT_FOUND_CODE));
 
-        coupon.validateStock();
+        coupon.issue();
 
-        Coupon updatedCoupon = coupon.incrementIssuedCount();
+        couponRepository.saveCoupon(coupon);
 
-        couponRepository.saveCoupon(updatedCoupon);
-
-        UserCoupon userCoupon = new UserCoupon(null, userId, coupon.id(), false);
+        UserCoupon userCoupon = new UserCoupon(null, userId, coupon.getId(), false);
         return couponRepository.saveUserCoupon(userCoupon);
     }
 
@@ -42,8 +40,8 @@ public class CouponService {
         UserCoupon userCoupon = couponRepository.findByUserIdAndCouponIdAndIsUsedFalseForUpdate(userId, couponId)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.COUPON_ALREADY_USED_OR_NOT_FOUND_CODE));
 
-        UserCoupon updatedUserCoupon = userCoupon.markAsUsed();
+        userCoupon.markAsUsed();
 
-        couponRepository.saveUserCoupon(updatedUserCoupon);
+        couponRepository.saveUserCoupon(userCoupon);
     }
 }

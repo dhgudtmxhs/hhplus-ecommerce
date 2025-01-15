@@ -67,8 +67,8 @@ public class CouponServiceTest {
         Long userId = 1L;
         String couponCode = "COUPON1";
         Coupon coupon = new Coupon(1L, couponCode, DiscountType.FIXED, 1000L, 10L, 5L);
-        UserCoupon expectedUserCoupon = new UserCoupon(null, userId, coupon.id(), false);
-        Coupon updatedCoupon = coupon.incrementIssuedCount();
+        UserCoupon expectedUserCoupon = new UserCoupon(null, userId, coupon.getId(), false);
+        coupon.issue();
 
         when(couponRepository.findByCouponCodeForUpdate(couponCode)).thenReturn(Optional.of(coupon));
         when(couponRepository.saveUserCoupon(any(UserCoupon.class))).thenReturn(expectedUserCoupon);
@@ -79,7 +79,7 @@ public class CouponServiceTest {
         // Then
         assertEquals(expectedUserCoupon, actualUserCoupon);
         verify(couponRepository).findByCouponCodeForUpdate(couponCode);
-        verify(couponRepository).saveCoupon(updatedCoupon);
+        verify(couponRepository).saveCoupon(coupon);
         verify(couponRepository).saveUserCoupon(any(UserCoupon.class));
     }
 
@@ -136,7 +136,6 @@ public class CouponServiceTest {
         Long userId = 1L;
         Long couponId = 101L;
         UserCoupon userCoupon = new UserCoupon(1L, userId, couponId, false);
-        UserCoupon updatedUserCoupon = userCoupon.markAsUsed();
 
         when(couponRepository.findByUserIdAndCouponIdAndIsUsedFalseForUpdate(userId, couponId))
                 .thenReturn(Optional.of(userCoupon));
@@ -145,7 +144,7 @@ public class CouponServiceTest {
         couponService.useCoupon(userId, couponId);
 
         // Then
-        verify(couponRepository).saveUserCoupon(updatedUserCoupon);
+        verify(couponRepository).saveUserCoupon(userCoupon);
     }
 
     @Test

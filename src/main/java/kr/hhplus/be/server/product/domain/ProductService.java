@@ -37,9 +37,9 @@ public class ProductService {
                             .orElseThrow(() -> new NoSuchElementException(ErrorCode.PRODUCT_NOT_FOUND_CODE));
 
                     // 재고 차감 후 새로운 도메인 객체 생성
-                    Product updatedProduct = product.reduceStock(productOrder.quantity());
+                    product.reduceStock(productOrder.quantity());
 
-                    productRepository.save(updatedProduct);
+                    productRepository.save(product);
 
                     return product;
                 })
@@ -54,7 +54,7 @@ public class ProductService {
                     .orElseThrow(() -> new NoSuchElementException(ErrorCode.PRODUCT_NOT_FOUND_CODE));
 
             // 차감된 수량만큼 재고 복원
-            product = product.addStock(productOrder.quantity());
+            product.addStock(productOrder.quantity());
 
             productRepository.save(product);
         });

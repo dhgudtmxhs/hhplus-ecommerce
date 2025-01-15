@@ -14,10 +14,10 @@ public class ProductTest {
         Long quantityToReduce = 5L;
 
         // When
-        Product updatedProduct = product.reduceStock(quantityToReduce);
+        product.reduceStock(quantityToReduce);
 
         // Then
-        assertEquals(5L, updatedProduct.stock());
+        assertEquals(5L, product.getStock(), "재고가 정상적으로 차감되어야 함");
     }
 
     @Test
@@ -37,10 +37,10 @@ public class ProductTest {
         Long quantityToAdd = 10L;
 
         // When
-        Product updatedProduct = product.addStock(quantityToAdd);
+        product.addStock(quantityToAdd);
 
         // Then
-        assertEquals(15L, updatedProduct.stock());
+        assertEquals(15L, product.getStock(), "재고가 정상적으로 추가되어야 함");
     }
 
     @Test

@@ -11,5 +11,4 @@ public interface PointInfoMapper {
 
     @Mapping(source = "point", target = "newPoint")
     ChargePointInfo toChargePointInfo(Point point);
-
 }
