@@ -45,6 +45,23 @@ public class PointServiceTest {
     }
 
     @Test
+    void 포인트가_없으면_자동으로_생성되고_저장된다() {
+        // Given
+        Long userId = 1L;
+        when(pointRepository.findByUserId(userId)).thenReturn(Optional.empty());
+        when(pointRepository.save(any(Point.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // When
+        Point result = pointService.getPoint(userId);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(userId, result.getUserId());
+        assertEquals(0L, result.getPoint());
+        verify(pointRepository, times(1)).save(any(Point.class));
+    }
+
+    @Test
     void 존재하지_않는_사용자_ID로_조회하면_NoSuchElementException_예외를_반환한다() {
         // Given
         Long userId = 10L;

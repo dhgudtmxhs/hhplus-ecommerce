@@ -15,7 +15,10 @@ public class PointService {
 
     public Point getPoint(Long userId) {
         return pointRepository.findByUserId(userId)
-                .orElseThrow(() -> new NoSuchElementException(ErrorCode.POINT_NOT_FOUND_CODE));
+                .orElseGet(() -> pointRepository.save(Point.builder()
+                        .userId(userId)
+                        .point(0L)
+                        .build()));
     }
 
     @Transactional
@@ -26,7 +29,6 @@ public class PointService {
                 .orElseThrow(() -> new NoSuchElementException(ErrorCode.POINT_NOT_FOUND_CODE));
 
         point.charge(amount);
-        pointRepository.save(point);
 
         return point;
     }
@@ -39,7 +41,6 @@ public class PointService {
                 .orElseThrow(() -> new NoSuchElementException(ErrorCode.POINT_NOT_FOUND_CODE));
 
         point.deduct(amount);
-        pointRepository.save(point);
 
         return point;
     }

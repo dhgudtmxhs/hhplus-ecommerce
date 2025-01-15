@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.point;
 
 import kr.hhplus.be.server.point.domain.Point;
+import kr.hhplus.be.server.point.domain.PointRepository;
 import kr.hhplus.be.server.point.domain.PointService;
 import kr.hhplus.be.server.point.infra.PointJpaRepository;
 import kr.hhplus.be.server.user.domain.User;
@@ -26,6 +27,9 @@ public class PointServiceIntegrationTest {
     private PointJpaRepository pointJpaRepository;
 
     @Autowired
+    private PointRepository pointRepository;
+
+    @Autowired
     private UserJpaRepository userJpaRepository;
 
     private Long userId;
@@ -34,9 +38,9 @@ public class PointServiceIntegrationTest {
     @BeforeEach
     @Transactional
     void setUp() {
-        // Given: UserEntity와 PointEntity 저장
+        // Given
         User user = userJpaRepository.save(User.builder()
-                .name("Test User")  // name 필드 설정
+                .name("ohs")
                 .build());
         userId = user.getId();
 
@@ -50,16 +54,6 @@ public class PointServiceIntegrationTest {
     }
 
     @Test
-    void findByUserId_정상_조회_확인() {
-        // When: 기존에 저장된 userId로 PointEntity 조회
-        Optional<Point> result = pointJpaRepository.findByUserId(userId);
-
-        // Then: 조회 결과 검증
-        assertTrue(result.isPresent());
-        assertEquals(existingPoint.getPoint(), result.get().getPoint());
-    }
-
-    @Test
     void 유효한_사용자_ID로_조회하면_포인트를_반환한다() {
         // When
         Point point = pointService.getPoint(userId);
@@ -67,6 +61,27 @@ public class PointServiceIntegrationTest {
         // Then
         assertNotNull(point);
         assertEquals(existingPoint.getPoint(), point.getPoint());
+    }
+
+    @Test
+    @Transactional
+    void 포인트_조회시_포인트가_없으면_생성된다() {
+
+        // given
+        pointJpaRepository.deleteAll();
+
+        // When
+        Point point = pointService.getPoint(userId);
+
+        // Then
+        assertNotNull(point);
+        assertEquals(userId, point.getUserId());
+        assertEquals(0L, point.getPoint());
+
+        // 저장된 포인트가 실제로 DB에 있는지 확인
+        Optional<Point> savedPoint = pointRepository.findByUserId(userId);
+        assertTrue(savedPoint.isPresent());
+        assertEquals(0L, savedPoint.get().getPoint());
     }
 
     @Test

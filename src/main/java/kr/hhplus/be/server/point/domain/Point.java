@@ -21,7 +21,7 @@ public class Point extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "user_id", nullable = false, unique = true)
     private Long userId;
 
     @Column(nullable = false)
@@ -34,7 +34,7 @@ public class Point extends BaseEntity {
         this.point = point;
     }
 
-    private static final Long MAX_POINT = 10_000_000L;
+    public static final Long MAX_POINT = 10_000_000L;
 
     public static void validatePoint(Long point) {
         if (point == null) {
