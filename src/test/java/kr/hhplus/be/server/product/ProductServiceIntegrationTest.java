@@ -4,12 +4,11 @@ import kr.hhplus.be.server.order.application.ProductOrderCommand;
 import kr.hhplus.be.server.order.domain.Order;
 import kr.hhplus.be.server.order.domain.OrderItem;
 import kr.hhplus.be.server.order.domain.OrderStatus;
-import kr.hhplus.be.server.order.infra.OrderItemRepository;
+import kr.hhplus.be.server.order.infra.OrderItemJpaRepository;
 import kr.hhplus.be.server.order.infra.OrderJpaRepository;
 import kr.hhplus.be.server.product.domain.Product;
 import kr.hhplus.be.server.product.domain.ProductService;
 import kr.hhplus.be.server.product.infra.ProductJpaRepository;
-import kr.hhplus.be.server.user.domain.User;
 import kr.hhplus.be.server.user.infra.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,10 +35,7 @@ public class ProductServiceIntegrationTest {
     private OrderJpaRepository orderJpaRepository;
 
     @Autowired
-    private UserJpaRepository userJpaRepository;
-
-    @Autowired
-    private OrderItemRepository orderItemJpaRepository;
+    private OrderItemJpaRepository orderItemJpaRepository;
 
     private List<ProductOrderCommand> productOrders;
 
@@ -144,6 +140,7 @@ public class ProductServiceIntegrationTest {
 
         // Then
         assertEquals(5, result.size(), "인기 상품은 최대 5개만 반환되어야 함");
+        // 인기상품 날짜 상세 테스트는 ProductControllerIntegrationTest
     }
 
     @Test
