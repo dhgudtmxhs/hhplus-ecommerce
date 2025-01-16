@@ -46,15 +46,17 @@ public class CouponService {
         return couponRepository.saveUserCoupon(userCoupon);
     }
 
-
-    @Transactional
-    public void useCoupon(Long userId, Long couponId) {
+    public Coupon useCoupon(Long userId, Long couponId) {
         UserCoupon userCoupon = couponRepository.findByUserIdAndCouponIdAndIsUsedFalseForUpdate(userId, couponId)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.COUPON_ALREADY_USED_OR_NOT_FOUND_CODE));
 
         userCoupon.markAsUsed();
 
         couponRepository.saveUserCoupon(userCoupon);
+
+        return couponRepository.findCouponById(userCoupon.getCouponId())
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.COUPON_NOT_FOUND_CODE));
+
     }
 
 

@@ -2,8 +2,10 @@ package kr.hhplus.be.server.payment.domain;
 
 import jakarta.persistence.*;
 import kr.hhplus.be.server.common.entity.BaseEntity;
-import kr.hhplus.be.server.point.domain.Point;
-import lombok.*;
+import kr.hhplus.be.server.common.exception.ErrorCode;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
@@ -15,67 +17,50 @@ public class Payment extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="order_id", nullable = false)
+    @Column(name = "order_id", nullable = false)
     private Long orderId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private PaymentStatus status;
+
+    @Column(name = "order_price", nullable = false)
+    private Long orderPrice;
 
     @Column(name = "final_price", nullable = false)
     private Long finalPrice;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name="payment_method", nullable = false)
-    private PaymentMethod paymentMethod;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private PaymentStatus status;
-
-    @Column(nullable = false)
-    private Long point;
+    @Column(name = "coupon_id") // nullable, 쿠폰이 없을 수 있음
+    private Long couponId;
 
     @Builder
-    public Payment(Long id, Long orderId, Long finalPrice, PaymentMethod paymentMethod, PaymentStatus status, Long point) {
+    public Payment(Long id, Long orderId, PaymentStatus status, Long orderPrice, Long finalPrice, Long couponId) {
+        validatePrices(orderPrice, finalPrice); // 생성 시 가격 검증
         this.id = id;
         this.orderId = orderId;
-        this.finalPrice = finalPrice;
-        this.paymentMethod = paymentMethod;
         this.status = status;
-        this.point = point;
+        this.orderPrice = orderPrice;
+        this.finalPrice = finalPrice;
+        this.couponId = couponId;
     }
 
-    /**
-     * 결제 생성 메서드
-     *
-     * @param orderId 주문 ID
-     * @param finalPrice 최종 결제 금액
-     * @param paymentMethod 결제 방법
-     * @param point 사용 포인트
-     * @return Payment 인스턴스
-     */
-    public static Payment create(Long orderId, Long finalPrice, PaymentMethod paymentMethod, Long point) {
-        PaymentStatus status = (point >= finalPrice)
-                ? PaymentStatus.SUCCESS
-                : PaymentStatus.FAILED;
+    private void validatePrices(Long orderPrice, Long finalPrice) {
+        if (orderPrice < 0) {
+            throw new IllegalArgumentException(ErrorCode.ORDER_PRICE_INVALID_CODE);
+        }
+        if (finalPrice < 0) {
+            throw new IllegalArgumentException(ErrorCode.PAY_PRICE_INVALID_CODE);
+        }
+    }
+
+    public static Payment create(Long orderId, Long orderPrice, Long finalPrice, Long couponId) {
         return Payment.builder()
                 .orderId(orderId)
+                .orderPrice(orderPrice)
                 .finalPrice(finalPrice)
-                .paymentMethod(paymentMethod)
-                .status(status)
-                .point(point)
+                .couponId(couponId)
+                .status(PaymentStatus.SUCCESS)
                 .build();
-    }
-
-    /**
-     * 결제 상태를 성공으로 변경
-     */
-    public void markAsSuccess() {
-        this.status = PaymentStatus.SUCCESS;
-    }
-
-    /**
-     * 결제 상태를 실패로 변경
-     */
-    public void markAsFailed() {
-        this.status = PaymentStatus.FAILED;
     }
 
 }

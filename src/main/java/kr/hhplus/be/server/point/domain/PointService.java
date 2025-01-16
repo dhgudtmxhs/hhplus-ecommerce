@@ -33,15 +33,17 @@ public class PointService {
         return point;
     }
 
-    @Transactional
-    public Point deductPoint(Long userId, Long amount) {
-        Point.validatePoint(amount);
 
-        Point point = pointRepository.findByUserIdForUpdate(userId)
+    public Point findPointForUpdate(Long userId) {
+        return pointRepository.findByUserIdForUpdate(userId)
                 .orElseThrow(() -> new NoSuchElementException(ErrorCode.POINT_NOT_FOUND_CODE));
+    }
+
+    public Point deductPoint(Point point, Long amount) {
+        Point.validatePoint(amount);
 
         point.deduct(amount);
 
-        return point;
+        return pointRepository.save(point); // 변경 후 저장
     }
 }

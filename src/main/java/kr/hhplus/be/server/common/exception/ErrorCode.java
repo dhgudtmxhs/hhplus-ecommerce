@@ -43,7 +43,12 @@ public enum ErrorCode {
     COUPON_ALREADY_ISSUED("E024", "해당 사용자에게 이미 발급된 쿠폰입니다."),
     PRODUCT_ID_NULL("E025", "상품 ID가 NULL 입니다."),
     PRODUCT_QUANTITY_NULL("E026", "상품 주문 수가 NULL 입니다."),
-
+    ORDER_ID_NULL("E027", "주문 ID가 Null 입니다."),
+    ORDER_ID_INVALID("E028", "주문 ID는 0보다 커야 합니다."),
+    ORDER_PRICE_NULL("E029", "주문 금액이 Null 입니다."),
+    ORDER_PRICE_INVALID("E030", "주문 금액은 0보다 커야 합니다."),
+    ORDER_NOT_FOUND("E031", "주문을 찾을 수 없습니다."),
+    PAY_PRICE_INVALID("E032", "결제금액은 음수일 수 없습니다."),
 
     INTERNAL_SERVER_ERROR("E999", "예상치 못한 오류가 발생했습니다.");
 
@@ -78,6 +83,12 @@ public enum ErrorCode {
     public static final String COUPON_ALREADY_ISSUED_CODE = "E024";
     public static final String PRODUCT_ID_NULL_CODE = "E025";
     public static final String PRODUCT_QUANTITY_NULL_CODE = "E026";
+    public static final String ORDER_ID_NULL_CODE = "E027";
+    public static final String ORDER_ID_INVALID_CODE = "E028";
+    public static final String ORDER_PRICE_NULL_CODE = "E029";
+    public static final String ORDER_PRICE_INVALID_CODE = "E030";
+    public static final String ORDER_NOT_FOUND_CODE = "E031";
+    public static final String PAY_PRICE_INVALID_CODE = "E032";
 
     public static final String INTERNAL_SERVER_ERROR_CODE = "E999";
 

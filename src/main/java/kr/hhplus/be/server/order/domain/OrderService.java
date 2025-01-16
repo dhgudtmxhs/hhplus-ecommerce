@@ -1,10 +1,13 @@
 package kr.hhplus.be.server.order.domain;
 
+import kr.hhplus.be.server.common.exception.ErrorCode;
 import kr.hhplus.be.server.order.application.OrderItemData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -38,5 +41,18 @@ public class OrderService {
         }
 
         return order;
+    }
+
+    public Order getOrder(Long orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new NoSuchElementException(ErrorCode.ORDER_NOT_FOUND_CODE));
+    }
+
+    public void completeOrder(Long orderId) {
+        Order order = getOrder(orderId);
+
+        order.markAsCompleted();
+
+        orderRepository.saveOrder(order);
     }
 }

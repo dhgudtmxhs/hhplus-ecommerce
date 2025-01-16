@@ -9,11 +9,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
+
     private final PaymentRepository paymentRepository;
 
-    @Transactional
-    public Payment processPayment(Order order, Point point) {
-        Payment payment = Payment.create(order.getId(), order.getFinalPrice(), PaymentMethod.POINT, point.getPoint());
-        return paymentRepository.save(payment);
+    public Payment createPayment(Long orderId, Long orderPrice, Long finalPrice, Long couponId) {
+        Payment payment = Payment.create(orderId, orderPrice, finalPrice, couponId);
+
+        paymentRepository.save(payment);
+
+        return payment;
     }
 }

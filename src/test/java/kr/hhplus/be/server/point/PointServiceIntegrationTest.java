@@ -39,6 +39,9 @@ public class PointServiceIntegrationTest {
     @Transactional
     void setUp() {
         // Given
+        pointJpaRepository.deleteAll();
+        userJpaRepository.deleteAll();
+
         User user = userJpaRepository.save(User.builder()
                 .name("ohs")
                 .build());
@@ -50,7 +53,9 @@ public class PointServiceIntegrationTest {
                         .point(5000L)
                         .build()
         );
-        existingPoint = new Point(point.getId(), 1L, point.getPoint());
+        // 기존 객체를 영속 상태로 변경
+        existingPoint = pointJpaRepository.findById(point.getId())
+                .orElseThrow(() -> new RuntimeException("포인트 엔티티가 저장되지 않았습니다."));
     }
 
     @Test
@@ -89,27 +94,40 @@ public class PointServiceIntegrationTest {
         // Given
         Long chargeAmount = 3000L;
 
+        System.out.println("Before Charge - Existing Point: " + existingPoint.getPoint());
+
         // When
         Point result = pointService.chargePoint(userId, chargeAmount);
 
         // Then
-        assertNotNull(result);
-        assertEquals(existingPoint.getPoint() + chargeAmount, result.getPoint());
+        Point updatedPoint = pointService.getPoint(userId);
+
+        assertNotNull(updatedPoint);
+
+        Long expectedTotalPoints = 5000L + chargeAmount;
+        assertEquals(expectedTotalPoints, updatedPoint.getPoint());
     }
 
     @Test
     void 유효한_포인트_차감은_정상적으로_수행된다() {
         // Given
-        Long deductAmount = 2000L;
+        Long deductAmount = 5000L;
+
+        System.out.println("Before Deduction - Existing Point: " + existingPoint.getPoint());
 
         // When
-        pointService.deductPoint(userId, deductAmount);
+        pointService.deductPoint(existingPoint, deductAmount);
 
         // Then
         Point result = pointService.getPoint(userId);
 
+        System.out.println("After Deduction - Updated Point: " + result.getPoint());
+
         assertNotNull(result);
-        assertEquals(existingPoint.getPoint() - deductAmount, result.getPoint());
+
+        // 차감 후 포인트 계산
+        Long expectedRemainingPoints = 0L;
+        assertEquals(expectedRemainingPoints, result.getPoint());
     }
 
 

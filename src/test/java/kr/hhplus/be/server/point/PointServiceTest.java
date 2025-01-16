@@ -117,24 +117,15 @@ public class PointServiceTest {
         Point point = new Point(1L, 1L, 5_000L);
 
         when(pointRepository.findByUserIdForUpdate(userId)).thenReturn(Optional.of(point));
+        when(pointRepository.save(any(Point.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // When
-        Point result = pointService.deductPoint(userId, deductAmount);
+        Point foundPoint = pointService.findPointForUpdate(userId);
+        Point result = pointService.deductPoint(foundPoint, deductAmount);
 
         // Then
         assertEquals(2_000L, result.getPoint());
         assertEquals(userId, result.getUserId());
-    }
-
-    @Test
-    void 존재하지_않는_사용자의_포인트를_차감하려_하면_NoSuchElementException_예외가_발생한다() {
-        // Given
-        Long userId = 1L;
-        Long deductAmount = 3_000L;
-        when(pointRepository.findByUserIdForUpdate(userId)).thenReturn(Optional.empty());
-
-        // When && Then
-        assertThrows(NoSuchElementException.class, () -> pointService.deductPoint(userId, deductAmount));
     }
 
     @Test
@@ -147,7 +138,7 @@ public class PointServiceTest {
         when(pointRepository.findByUserIdForUpdate(userId)).thenReturn(Optional.of(point));
 
         // When && Then
-        assertThrows(IllegalArgumentException.class, () -> pointService.deductPoint(userId, deductAmount));
+        assertThrows(IllegalArgumentException.class, () -> pointService.deductPoint(point, deductAmount));
     }
 
 

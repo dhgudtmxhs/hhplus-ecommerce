@@ -49,4 +49,13 @@ public class Coupon extends BaseEntity {
         }
         this.issuedCount += 1;
     }
+
+    public Long calculateDiscount(Long orderPrice) {
+        if (discountType == DiscountType.FIXED) {
+            return Math.min(discountAmount, orderPrice); // 고정 할인은 최대 주문 금액까지만 적용
+        } else if (discountType == DiscountType.PERCENT) {
+            return Math.round(orderPrice * (discountAmount / 100.0)); // 비율 할인 계산
+        }
+        return 0L; // 알 수 없는 할인 유형일 경우 0 반환
+    }
 }

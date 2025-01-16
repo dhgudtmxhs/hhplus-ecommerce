@@ -155,15 +155,19 @@ public class CouponServiceTest {
         Long userId = 1L;
         Long couponId = 101L;
         UserCoupon userCoupon = new UserCoupon(1L, userId, couponId, false);
+        Coupon coupon = new Coupon(couponId, "TestCoupon", DiscountType.FIXED, 1000L, 10L, 5L);
 
         when(couponRepository.findByUserIdAndCouponIdAndIsUsedFalseForUpdate(userId, couponId))
                 .thenReturn(Optional.of(userCoupon));
+        when(couponRepository.findCouponById(couponId))
+                .thenReturn(Optional.of(coupon));
 
         // When
-        couponService.useCoupon(userId, couponId);
+        Coupon result = couponService.useCoupon(userId, couponId);
 
         // Then
         verify(couponRepository).saveUserCoupon(userCoupon);
+        assertEquals(coupon, result);
     }
 
     @Test
