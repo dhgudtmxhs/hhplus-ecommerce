@@ -73,7 +73,7 @@ public enum ErrorCode {
     public static final String ORDER_STATUS_CHANGE_INVALID_CODE = "E022";
     public static final String ORDER_CANCEL_INVALID_CODE = "E023";
 
-    public static final String COUPON_ALREADY_ISSUED_CODE = "E023";
+    public static final String COUPON_ALREADY_ISSUED_CODE = "E024";
 
     public static final String INTERNAL_SERVER_ERROR_CODE = "E999";
 
