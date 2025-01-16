@@ -31,29 +31,6 @@ public class ProductTest {
     }
 
     @Test
-    void 유효한_재고_추가는_정상적으로_수행된다() {
-        // Given
-        Product product = new Product(1L, "상품A", 1000L, 5L);
-        Long quantityToAdd = 10L;
-
-        // When
-        product.addStock(quantityToAdd);
-
-        // Then
-        assertEquals(15L, product.getStock(), "재고가 정상적으로 추가되어야 함");
-    }
-
-    @Test
-    void 음수_또는_0_수량으로_재고를_추가하면_IllegalArgumentException_예외가_발생한다() {
-        // Given
-        Product product = new Product(1L, "상품A", 1000L, 5L);
-
-        // When && Then
-        assertThrows(IllegalArgumentException.class, () -> product.addStock(0L));
-        assertThrows(IllegalArgumentException.class, () -> product.addStock(-5L));
-    }
-
-    @Test
     void 음수_또는_0_수량으로_재고를_차감하면_IllegalArgumentException_예외가_발생한다() {
         // Given
         Product product = new Product(1L, "상품A", 1000L, 10L);

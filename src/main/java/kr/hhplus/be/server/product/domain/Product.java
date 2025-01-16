@@ -53,10 +53,4 @@ public class Product extends BaseEntity {
         this.stock -= quantity;
     }
 
-    public void addStock(Long quantity) {
-        if (quantity <= 0) {
-            throw new IllegalArgumentException(ErrorCode.PRODUCT_QUANTITY_INVALID_CODE);
-        }
-        this.stock += quantity;
-    }
 }

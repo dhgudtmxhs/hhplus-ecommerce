@@ -41,6 +41,9 @@ public class ProductServiceIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        orderItemJpaRepository.deleteAll();
+        productJpaRepository.deleteAll();
+
         // 상품 개별 저장 후 반환된 실제 엔티티 사용
         Product productA = productJpaRepository.save(new Product(null, "상품A", 1000L, 100L));
         Product productB = productJpaRepository.save(new Product(null, "상품B", 1500L, 50L));
@@ -56,17 +59,16 @@ public class ProductServiceIntegrationTest {
         Order order = orderJpaRepository.save(Order.builder()
                 .userId(userId)
                 .totalPrice(10000L)
-                .finalPrice(9500L)
-                .status(OrderStatus.PENDING)
+                .status(OrderStatus.CREATED)
                 .build());
 
         // 주문 항목 개별 저장
-        orderItemJpaRepository.save(new OrderItem(order.getId(), productA.getId(), 1000L, 15L));
-        orderItemJpaRepository.save(new OrderItem(order.getId(), productB.getId(), 1500L, 10L));
-        orderItemJpaRepository.save(new OrderItem(order.getId(), productC.getId(), 1200L, 8L));
-        orderItemJpaRepository.save(new OrderItem(order.getId(), productD.getId(), 1300L, 5L));
-        orderItemJpaRepository.save(new OrderItem(order.getId(), productE.getId(), 1100L, 20L));
-        orderItemJpaRepository.save(new OrderItem(order.getId(), productF.getId(), 1400L, 7L));
+        orderItemJpaRepository.save(new OrderItem(null, order.getId(), productA.getId(), "1", 1000L, 15L));
+        orderItemJpaRepository.save(new OrderItem(null, order.getId(), productB.getId(), "2",1500L, 10L));
+        orderItemJpaRepository.save(new OrderItem(null, order.getId(), productC.getId(), "3",1200L, 8L));
+        orderItemJpaRepository.save(new OrderItem(null, order.getId(), productD.getId(), "4",1300L, 5L));
+        orderItemJpaRepository.save(new OrderItem(null, order.getId(), productE.getId(), "5",1100L, 20L));
+        orderItemJpaRepository.save(new OrderItem(null, order.getId(), productF.getId(), "6",1400L, 7L));
 
         // 재고 차감 테스트
         productOrders = Arrays.asList(
@@ -141,24 +143,6 @@ public class ProductServiceIntegrationTest {
         // Then
         assertEquals(5, result.size(), "인기 상품은 최대 5개만 반환되어야 함");
         // 인기상품 날짜 상세 테스트는 ProductControllerIntegrationTest
-    }
-
-    @Test
-    void 유효한_상품_목록으로_재고_차감시_정상적으로_수행된다() {
-        // Given: setUp() 메서드에서 productOrders가 준비됨
-
-        // When
-        List<Product> result = productService.reduceStockAndGetProducts(productOrders);
-
-        // Then
-        assertEquals(2, result.size(), "재고 차감 후 반환된 상품 개수가 일치해야 함");
-
-        // 재고 차감 검증
-        Product product1 = productJpaRepository.findById(productOrders.get(0).productId()).orElseThrow();
-        Product product2 = productJpaRepository.findById(productOrders.get(1).productId()).orElseThrow();
-
-        assertEquals(97L, product1.getStock(), "상품 1의 재고가 3개 차감되어 97이어야 함");
-        assertEquals(48L, product2.getStock(), "상품 2의 재고가 2개 차감되어 48이어야 함");
     }
 
 

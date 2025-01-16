@@ -10,5 +10,6 @@ public record IssueCouponRequest(
         Long userId,
 
         @NotNull(message = ErrorCode.COUPON_ID_NULL_CODE)
+        @Positive(message = ErrorCode.COUPON_ID_INVALID_CODE)
         Long couponId
 ) {}

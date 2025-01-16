@@ -1,6 +1,5 @@
-package kr.hhplus.be.server.order.application;
+package kr.hhplus.be.server.payment.application;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import kr.hhplus.be.server.order.domain.Order;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

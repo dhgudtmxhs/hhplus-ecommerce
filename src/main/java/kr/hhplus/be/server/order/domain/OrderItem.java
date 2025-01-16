@@ -16,25 +16,32 @@ public class OrderItem extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 논리적으로만 관리
     @Column(name = "order_id", nullable = false)
     private Long orderId;
 
     @Column(name = "product_id", nullable = false)
     private Long productId;
 
-    @Column(nullable = false)
+    @Column(name = "product_name", nullable = false)
+    private String productName;
+
+    @Column(name = "price", nullable = false)
     private Long price;
 
-    @Column(nullable = false)
+    @Column(name = "quantity", nullable = false)
     private Long quantity;
 
     @Builder
-    public OrderItem(Long orderId, Long productId, Long price, Long quantity) {
+    public OrderItem(Long id, Long orderId, Long productId, String productName, Long price, Long quantity) {
+        this.id = id;
         this.orderId = orderId;
         this.productId = productId;
+        this.productName = productName;
         this.price = price;
         this.quantity = quantity;
     }
+
 
     public Long calculateTotalPrice() {
         return this.price * this.quantity;

@@ -12,9 +12,6 @@ public record OrderRequest (
         @Positive(message = ErrorCode.USER_ID_INVALID_CODE)
         Long userId,
 
-        @Size(min = 1, message = ErrorCode.PRODUCTS_LIST_EMPTY_CODE) // 최소 1개 이상의 항목이 있어야 함
-        List<ProductOrderRequest> products,
-
-        @NotNull(message = ErrorCode.COUPON_ID_NULL_CODE)
-        Long couponId
+        @Size(min = 1, message = ErrorCode.PRODUCTS_LIST_EMPTY_CODE)
+        List<ProductOrderRequest> products
 ){}

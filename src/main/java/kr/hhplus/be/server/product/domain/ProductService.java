@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
@@ -28,34 +29,24 @@ public class ProductService {
         return productRepository.findPopularProducts();
     }
 
-    @Transactional
-    public List<Product> reduceStockAndGetProducts(List<ProductOrderCommand> productOrders) {
-        return productOrders.stream()
-                .map(productOrder -> {
+    public List<Product> findByIdForUpdate(List<Long> productIds) {
+        List<Product> products = productIds.stream()
+                .map(productId -> productRepository.findByIdForUpdate(productId)
+                        .orElseThrow(() -> new NoSuchElementException(ErrorCode.PRODUCT_NOT_FOUND_CODE)))
+                .toList();
 
-                    Product product = productRepository.findByIdForUpdate(productOrder.productId())
-                            .orElseThrow(() -> new NoSuchElementException(ErrorCode.PRODUCT_NOT_FOUND_CODE));
+        if (products.size() != productIds.size()) {
+            throw new NoSuchElementException(ErrorCode.PRODUCT_NOT_FOUND_CODE);
+        }
 
-                    // 재고 차감 후 새로운 도메인 객체 생성
-                    product.reduceStock(productOrder.quantity());
-
-                    productRepository.save(product);
-
-                    return product;
-                })
-                .collect(Collectors.toList());
+        return products;
     }
 
-
-    @Transactional
-    public void restoreStock(List<ProductOrderCommand> products) {
-        products.forEach(productOrder -> {
-            Product product = productRepository.findByIdForUpdate(productOrder.productId())
+    public void deductStock(Map<Long, Long> productQuantities) {
+        productQuantities.forEach((productId, quantity) -> {
+            Product product = productRepository.findByIdForUpdate(productId)
                     .orElseThrow(() -> new NoSuchElementException(ErrorCode.PRODUCT_NOT_FOUND_CODE));
-
-            // 차감된 수량만큼 재고 복원
-            product.addStock(productOrder.quantity());
-
+            product.reduceStock(quantity);
             productRepository.save(product);
         });
     }
