@@ -6,8 +6,6 @@ import java.util.Optional;
 public interface CouponRepository {
     List<UserCoupon> findByUserIdAndIsUsedFalse(Long userId);
 
-    Optional<Coupon> findByCouponCodeForUpdate(String couponCode);
-
     void saveCoupon(Coupon updatedCoupon);
 
     UserCoupon saveUserCoupon(UserCoupon userCoupon);
@@ -15,4 +13,8 @@ public interface CouponRepository {
     Optional<Coupon> findByUserIdAndCouponIdAndIsUsedFalse(Long userId, Long couponId);
 
     Optional<UserCoupon> findByUserIdAndCouponIdAndIsUsedFalseForUpdate(Long userId, Long couponId);
+
+    Optional<Coupon> findByIdForUpdate(Long couponId);
+
+    Optional<UserCoupon> findByCouponIdAndUserIdForUpdate(Long couponId, Long userId);
 }

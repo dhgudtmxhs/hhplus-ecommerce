@@ -62,13 +62,23 @@ public class PointServiceTest {
     }
 
     @Test
-    void 존재하지_않는_사용자_ID로_조회하면_NoSuchElementException_예외를_반환한다() {
+    void 존재하지_않는_사용자_ID로_조회하면_새로운_Point_객체를_생성하고_저장한다() {
         // Given
         Long userId = 10L;
         when(pointRepository.findByUserId(userId)).thenReturn(Optional.empty());
+        Point newPoint = Point.builder()
+                .userId(userId)
+                .point(0L)
+                .build();
+        when(pointRepository.save(any(Point.class))).thenReturn(newPoint);
 
-        // When & Then
-        assertThrows(NoSuchElementException.class, () -> pointService.getPoint(userId));
+        // When
+        Point result = pointService.getPoint(userId);
+
+        // Then
+        verify(pointRepository).save(any(Point.class));
+        assertEquals(userId, result.getUserId());
+        assertEquals(0L, result.getPoint());
     }
 
     @Test
@@ -84,11 +94,8 @@ public class PointServiceTest {
         Point result = pointService.chargePoint(userId, chargeAmount);
 
         // Then
-        verify(pointRepository).save(any(Point.class)); // 저장 메서드가 호출되었는지 확인
-
-        // 개별 필드 값 비교
-        assertEquals(8_000L, result.getPoint());  // 충전 후 포인트 값 비교
-        assertEquals(userId, result.getUserId());  // 사용자 ID 비교
+        assertEquals(8_000L, result.getPoint());
+        assertEquals(userId, result.getUserId());
     }
 
     @Test
@@ -115,9 +122,6 @@ public class PointServiceTest {
         Point result = pointService.deductPoint(userId, deductAmount);
 
         // Then
-        verify(pointRepository).save(any(Point.class));
-
-        // 개별 필드 값 비교
         assertEquals(2_000L, result.getPoint());
         assertEquals(userId, result.getUserId());
     }

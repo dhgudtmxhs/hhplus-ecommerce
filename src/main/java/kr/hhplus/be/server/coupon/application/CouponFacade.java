@@ -28,7 +28,7 @@ public class CouponFacade {
     public UserCouponInfo issueCoupon(IssueCouponCommand command) {
 
         User user = userService.getUser(command.userId());
-        UserCoupon issuedCoupon = couponService.issueCoupon(user.getId(), command.couponCode());
+        UserCoupon issuedCoupon = couponService.issueCoupon(user.getId(), command.couponId());
 
         return couponInfoMapper.toUserCouponInfo(issuedCoupon);
     }

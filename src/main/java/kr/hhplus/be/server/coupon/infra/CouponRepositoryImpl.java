@@ -22,11 +22,6 @@ public class CouponRepositoryImpl implements CouponRepository {
     }
 
     @Override
-    public Optional<Coupon> findByCouponCodeForUpdate(String couponCode) {
-        return couponJpaRepository.findByCouponCodeForUpdate(couponCode);
-    }
-
-    @Override
     public void saveCoupon(Coupon updatedCoupon) {
         couponJpaRepository.save(updatedCoupon);
     }
@@ -57,4 +52,16 @@ public class CouponRepositoryImpl implements CouponRepository {
     public Optional<UserCoupon> findByUserIdAndCouponIdAndIsUsedFalseForUpdate(Long userId, Long couponId) {
         return userCouponJpaRepository.findByUserIdAndCouponIdAndIsUsedFalseForUpdate(userId, couponId);
     }
+
+
+    @Override
+    public Optional<Coupon> findByIdForUpdate(Long couponId) {
+        return couponJpaRepository.findByIdForUpdate(couponId);
+    }
+
+    @Override
+    public Optional<UserCoupon> findByCouponIdAndUserIdForUpdate(Long couponId, Long userId) {
+        return userCouponJpaRepository.findByCouponIdAndUserIdForUpdate(couponId, userId);
+    }
+
 }

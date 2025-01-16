@@ -12,7 +12,12 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = "user_coupon")
+@Table(
+        name = "user_coupon",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"user_id", "coupon_id"})
+        }
+)
 public class UserCoupon extends BaseEntity {
 
     @Id

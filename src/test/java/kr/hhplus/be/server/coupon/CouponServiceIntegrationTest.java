@@ -29,8 +29,9 @@ public class CouponServiceIntegrationTest {
     private UserCouponJpaRepository userCouponJpaRepository;
 
     @BeforeEach
-    void setUp() {
-        // 초기화 작업이 필요하면 여기에 추가
+    public void setup() {
+        couponJpaRepository.deleteAll();
+        userCouponJpaRepository.deleteAll();
     }
 
     @Test
@@ -39,36 +40,37 @@ public class CouponServiceIntegrationTest {
         Long userId = 1L;
 
         // Coupon 저장
-        Coupon coupon1 = new Coupon(null, "COUPON1", DiscountType.FIXED, 1000L, 10L, 5L);
-        Coupon coupon2 = new Coupon(null, "COUPON2", DiscountType.PERCENT, 500L, 20L, 10L);
-        couponJpaRepository.save(coupon1);
-        couponJpaRepository.save(coupon2);
+        Coupon coupon1 = couponJpaRepository.save(
+                new Coupon(null, "COUPON1", DiscountType.FIXED, 1000L, 10L, 5L));
+        Coupon coupon2 = couponJpaRepository.save(
+                new Coupon(null, "COUPON2", DiscountType.PERCENT, 50L, 20L, 10L));
 
-        // UserCoupon 저장 (userId와 couponId 직접 참조)
-        UserCoupon userCoupon1 = new UserCoupon(null, userId, coupon1.getId(), false);
-        UserCoupon userCoupon2 = new UserCoupon(null, userId, coupon2.getId(), false);
-        userCouponJpaRepository.save(userCoupon1);
-        userCouponJpaRepository.save(userCoupon2);
+        // UserCoupon
+        userCouponJpaRepository.save(
+                new UserCoupon(null, userId, coupon1.getId(), false));
+        userCouponJpaRepository.save(
+                new UserCoupon(null, userId, coupon2.getId(), false));
 
         // When
         List<UserCoupon> actualCoupons = couponService.getUserCoupons(userId);
 
         // Then
-        assertNotNull(actualCoupons);
         assertEquals(2, actualCoupons.size(), "2개의 쿠폰이 조회되어야 함");
+
     }
 
     @Test
-    void 유효한_사용자_ID와_쿠폰_코드로_쿠폰을_발급한다() {
+    void 유효한_사용자_ID와_쿠폰_ID로_쿠폰을_발급한다() {
         // Given
         Long userId = 1L;
-        String couponCode = "COUPON1";
+        Long couponId;
 
-        Coupon coupon = new Coupon(null, couponCode, DiscountType.FIXED, 1000L, 10L, 5L);
+        Coupon coupon = new Coupon(null, "COUPON1", DiscountType.FIXED, 1000L, 10L, 5L);
         couponJpaRepository.save(coupon);
+        couponId = coupon.getId();
 
         // When
-        UserCoupon issuedCoupon = couponService.issueCoupon(userId, couponCode);
+        UserCoupon issuedCoupon = couponService.issueCoupon(userId, couponId);
 
         // Then
         assertNotNull(issuedCoupon);

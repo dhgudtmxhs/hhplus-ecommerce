@@ -40,6 +40,9 @@ public enum ErrorCode {
     ORDER_STATUS_CHANGE_INVALID("E022", "결제 대기 상태에서만 상태 변경이 가능합니다."),
     ORDER_CANCEL_INVALID("E023", "결제 완료된 주문은 취소할 수 없습니다."),
 
+
+    COUPON_ALREADY_ISSUED("E024", "해당 사용자에게 이미 발급된 쿠폰입니다."),
+
     INTERNAL_SERVER_ERROR("E999", "예상치 못한 오류가 발생했습니다.");
 
     public static final String USER_ID_NULL_CODE = "E001";
@@ -69,6 +72,8 @@ public enum ErrorCode {
     public static final String ORDER_FINAL_PRICE_INVALID_CODE = "E021";
     public static final String ORDER_STATUS_CHANGE_INVALID_CODE = "E022";
     public static final String ORDER_CANCEL_INVALID_CODE = "E023";
+
+    public static final String COUPON_ALREADY_ISSUED_CODE = "E023";
 
     public static final String INTERNAL_SERVER_ERROR_CODE = "E999";
 

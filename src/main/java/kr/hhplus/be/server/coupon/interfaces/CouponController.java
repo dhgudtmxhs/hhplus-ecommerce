@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+import kr.hhplus.be.server.common.exception.ErrorCode;
 import kr.hhplus.be.server.coupon.application.CouponCommand;
 import kr.hhplus.be.server.coupon.application.CouponFacade;
 import kr.hhplus.be.server.coupon.application.IssueCouponCommand;
@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/coupons")
@@ -27,10 +28,16 @@ public class CouponController {
 
     @Operation(summary = "보유 쿠폰 조회", description = "사용자가 보유한 쿠폰 목록을 조회합니다.")
     @GetMapping(value = {"/{userId}", "/"})
-    public ResponseEntity<List<UserCouponResponse>> getUserCoupons(@Parameter(description = "사용자 ID", required = true)
-                                                                   @PathVariable(value = "userId", required = false) Long userId) {
+    public ResponseEntity<List<UserCouponResponse>> getUserCoupons(@Parameter(description = "사용자 ID", required = false)
+                                                                   @PathVariable(value = "userId", required = false) Optional<Long> userId) {
 
-        CouponCommand command = new CouponCommand(userId);
+        Long id = userId.orElseThrow(() -> new IllegalArgumentException(ErrorCode.USER_ID_NULL_CODE));
+
+        if (id <= 0) {
+            throw new IllegalArgumentException(ErrorCode.USER_ID_INVALID_CODE);
+        }
+
+        CouponCommand command = new CouponCommand(id);
         List<UserCouponInfo> userCoupons = couponFacade.getUserCoupons(command);
 
         List<UserCouponResponse> response = couponResponseMapper.toUserCouponResponseList(userCoupons);
