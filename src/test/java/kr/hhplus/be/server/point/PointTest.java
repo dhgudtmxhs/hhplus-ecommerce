@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.point;
 
 import kr.hhplus.be.server.point.domain.Point;
+import kr.hhplus.be.server.user.domain.User;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,10 +28,10 @@ public class PointTest {
         Long chargeAmount = 3_000L;
 
         // When
-        Point updatedPoint = point.chargePoint(chargeAmount);
+        point.charge(chargeAmount);
 
         // Then
-        assertEquals(8_000L, updatedPoint.point());
+        assertEquals(8_000L, point.getPoint(), "포인트가 정상적으로 충전되어야 함");
     }
 
     @Test
@@ -40,7 +41,7 @@ public class PointTest {
         Long chargeAmount = 600_000L;
 
         // When && Then
-        assertThrows(IllegalArgumentException.class, () -> point.chargePoint(chargeAmount));
+        assertThrows(IllegalArgumentException.class, () -> point.charge(chargeAmount));
     }
 
     @Test
@@ -50,11 +51,12 @@ public class PointTest {
         Long deductAmount = 3_000L;
 
         // When
-        Point updatedPoint = point.deduct(deductAmount);
+        point.deduct(deductAmount);
 
         // Then
-        assertEquals(2_000L, updatedPoint.point());
+        assertEquals(2_000L, point.getPoint(), "포인트가 정상적으로 차감되어야 함");
     }
+
 
     @Test
     void 차감할_포인트가_보유_포인트보다_많으면_IllegalArgumentException_예외가_발생한다() {

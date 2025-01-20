@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.point.domain;
 
+import kr.hhplus.be.server.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,35 +15,35 @@ public class PointService {
 
     public Point getPoint(Long userId) {
         return pointRepository.findByUserId(userId)
-                .orElseThrow(() -> new NoSuchElementException("사용자의 포인트를 찾을 수 없습니다."));
+                .orElseGet(() -> pointRepository.save(Point.builder()
+                        .userId(userId)
+                        .point(0L)
+                        .build()));
     }
 
     @Transactional
     public Point chargePoint(Long userId, Long amount) {
-
         Point.validatePoint(amount);
 
         Point point = pointRepository.findByUserIdForUpdate(userId)
-                .orElseThrow(() -> new NoSuchElementException("사용자의 포인트를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NoSuchElementException(ErrorCode.POINT_NOT_FOUND_CODE));
 
-        Point updatedPoint = point.chargePoint(amount);
+        point.charge(amount);
 
-        pointRepository.save(updatedPoint);
-
-        return updatedPoint;
+        return point;
     }
 
-    @Transactional
-    public Point deductPoint(Long userId, Long amount) {
+
+    public Point findPointForUpdate(Long userId) {
+        return pointRepository.findByUserIdForUpdate(userId)
+                .orElseThrow(() -> new NoSuchElementException(ErrorCode.POINT_NOT_FOUND_CODE));
+    }
+
+    public Point deductPoint(Point point, Long amount) {
         Point.validatePoint(amount);
 
-        Point point = pointRepository.findByUserIdForUpdate(userId)
-                .orElseThrow(() -> new NoSuchElementException("사용자의 포인트를 찾을 수 없습니다."));
+        point.deduct(amount);
 
-        Point updatedPoint = point.deduct(amount);
-
-        pointRepository.save(updatedPoint);
-
-        return updatedPoint;
+        return pointRepository.save(point); // 변경 후 저장
     }
 }

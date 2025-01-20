@@ -1,10 +1,9 @@
 package kr.hhplus.be.server.order;
 
-import kr.hhplus.be.server.coupon.domain.Coupon;
-import kr.hhplus.be.server.coupon.domain.DiscountType;
 import kr.hhplus.be.server.order.domain.Order;
 import kr.hhplus.be.server.order.domain.OrderItem;
 import kr.hhplus.be.server.order.domain.OrderStatus;
+import kr.hhplus.be.server.common.exception.ErrorCode;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -14,110 +13,159 @@ import static org.junit.jupiter.api.Assertions.*;
 public class OrderTest {
 
     @Test
-    void 유효한_상품과_쿠폰으로_주문을_생성하면_정상적으로_생성된다() {
+    void 주문을_정상적으로_생성한다() {
         // Given
         List<OrderItem> orderItems = List.of(
-                new OrderItem(null, 1L, 2L, 1000L), // 상품A 2개
-                new OrderItem(null, 2L, 1L, 1500L)  // 상품B 1개
+                OrderItem.builder()
+                        .productId(1L)
+                        .productName("상품A")
+                        .price(1000L)
+                        .quantity(2L)
+                        .build(),
+                OrderItem.builder()
+                        .productId(2L)
+                        .productName("상품B")
+                        .price(1500L)
+                        .quantity(1L)
+                        .build()
         );
-        Coupon coupon = new Coupon(1L, "COUPON1", DiscountType.FIXED, 500L, 10L, 1L);
-        Long usedPoints = 200L;
 
         // When
-        Order order = Order.create(1L, orderItems, coupon, usedPoints);
+        Order order = Order.builder()
+                .userId(1L)
+                .totalPrice(3500L)
+                .status(OrderStatus.CREATED)
+                .orderItems(orderItems)
+                .build();
 
         // Then
+        assertEquals(1L, order.getUserId());
         assertEquals(3500L, order.getTotalPrice());
-        assertEquals(2800L, order.getFinalPrice());
-        assertEquals(OrderStatus.PENDING, order.getStatus());
+        assertEquals(OrderStatus.CREATED, order.getStatus());
+        assertNotNull(order.getOrderItems());
+        assertEquals(2, order.getOrderItems().size());
+
+        for (OrderItem item : order.getOrderItems()) {
+            assertNull(item.getOrderId());
+            assertNotNull(item.getProductId());
+            assertNotNull(item.getProductName());
+            assertTrue(item.getPrice() > 0);
+            assertTrue(item.getQuantity() > 0);
+        }
     }
 
     @Test
-    void 유효한_상품만으로_주문을_생성하면_정상적으로_생성된다() {
+    void Order_create_메서드를_사용하여_정상적으로_생성된다() {
         // Given
         List<OrderItem> orderItems = List.of(
-                new OrderItem(null, 1L, 2L, 1000L),
-                new OrderItem(null, 2L, 1L, 1500L)
+                OrderItem.builder()
+                        .productId(1L)
+                        .productName("상품A")
+                        .price(1000L)
+                        .quantity(2L)
+                        .build(),
+                OrderItem.builder()
+                        .productId(2L)
+                        .productName("상품B")
+                        .price(1500L)
+                        .quantity(1L)
+                        .build()
         );
-        Long usedPoints = 0L;
 
         // When
-        Order order = Order.create(1L, orderItems, null, usedPoints);
+        Order order = Order.create(1L, orderItems);
 
         // Then
+        assertEquals(1L, order.getUserId());
         assertEquals(3500L, order.getTotalPrice());
-        assertEquals(3500L, order.getFinalPrice());
-        assertEquals(OrderStatus.PENDING, order.getStatus());
+        assertEquals(OrderStatus.CREATED, order.getStatus());
+        assertNotNull(order.getOrderItems());
+        assertEquals(2, order.getOrderItems().size());
+
+        for (OrderItem item : order.getOrderItems()) {
+            assertNull(item.getOrderId());
+            assertNotNull(item.getProductId());
+            assertNotNull(item.getProductName());
+            assertTrue(item.getPrice() > 0);
+            assertTrue(item.getQuantity() > 0);
+        }
     }
 
     @Test
-    void 최종_결제_금액이_0보다_작으면_IllegalArgumentException_예외가_발생한다() {
+    void markAsCompleted을_호출하면_상태가_COMPLETED로_변경된다() {
         // Given
         List<OrderItem> orderItems = List.of(
-                new OrderItem(null, 1L, 1L, 1000L)
+                OrderItem.builder()
+                        .productId(1L)
+                        .productName("상품A")
+                        .price(1000L)
+                        .quantity(1L)
+                        .build()
         );
-        Coupon coupon = new Coupon(1L, "COUPON1", DiscountType.FIXED, 1500L, 10L, 1L); // 할인 금액이 상품 금액보다 큼
-        Long usedPoints = 1000L;
+        Order order = Order.create(1L, orderItems);
+
+        // When
+        order.markAsCompleted();
+
+        // Then
+        assertEquals(OrderStatus.COMPLETED, order.getStatus());
+    }
+
+    @Test
+    void markAsCompleted을_호출했을_때_상태가_CREATED가_아니면_예외가_발생한다() {
+        // Given
+        List<OrderItem> orderItems = List.of(
+                OrderItem.builder()
+                        .productId(1L)
+                        .productName("상품A")
+                        .price(1000L)
+                        .quantity(1L)
+                        .build()
+        );
+        Order order = Order.create(1L, orderItems);
+        order.markAsCompleted();
 
         // When & Then
-        assertThrows(IllegalArgumentException.class, () -> Order.create(1L, orderItems, coupon, usedPoints));
+        IllegalStateException exception = assertThrows(IllegalStateException.class, order::markAsCompleted);
+        assertEquals(ErrorCode.ORDER_STATUS_CHANGE_INVALID_CODE, exception.getMessage());
     }
 
     @Test
-    void 주문_상태를_결제_완료로_변경하면_정상적으로_변경된다() {
+    void markAsCancelled을_호출하면_상태가_CANCELLED로_변경된다() {
         // Given
         List<OrderItem> orderItems = List.of(
-                new OrderItem(null, 1L, 1L, 1000L)
+                OrderItem.builder()
+                        .productId(1L)
+                        .productName("상품A")
+                        .price(1000L)
+                        .quantity(1L)
+                        .build()
         );
-        Order order = Order.create(1L, orderItems, null, 0L);
+        Order order = Order.create(1L, orderItems);
 
         // When
-        order.markAsPaid();
-
-        // Then
-        assertEquals(OrderStatus.PAID, order.getStatus());
-    }
-
-    @Test
-    void 결제_완료된_주문을_취소하면_IllegalStateException_예외가_발생한다() {
-        // Given
-        List<OrderItem> orderItems = List.of(
-                new OrderItem(null, 1L, 1L, 1000L)
-        );
-        Order order = Order.create(1L, orderItems, null, 0L);
-        order.markAsPaid();
-
-        // When & Then
-        assertThrows(IllegalStateException.class, order::cancelOrder);
-    }
-
-    @Test
-    void 결제_대기중인_주문을_취소하면_정상적으로_취소된다() {
-        // Given
-        List<OrderItem> orderItems = List.of(
-                new OrderItem(null, 1L, 1L, 1000L)
-        );
-        Order order = Order.create(1L, orderItems, null, 0L);
-
-        // When
-        order.cancelOrder();
+        order.markAsCancelled();
 
         // Then
         assertEquals(OrderStatus.CANCELLED, order.getStatus());
     }
 
     @Test
-    void 결제_대기중인_주문을_결제_실패로_변경하면_정상적으로_변경된다() {
+    void markAsCancelled을_호출했을_때_상태가_COMPLETED이면_예외가_발생한다() {
         // Given
         List<OrderItem> orderItems = List.of(
-                new OrderItem(null, 1L, 1L, 1000L)
+                OrderItem.builder()
+                        .productId(1L)
+                        .productName("상품A")
+                        .price(1000L)
+                        .quantity(1L)
+                        .build()
         );
-        Order order = Order.create(1L, orderItems, null, 0L);
+        Order order = Order.create(1L, orderItems);
+        order.markAsCompleted();
 
-        // When
-        order.markAsFailed();
-
-        // Then
-        assertEquals(OrderStatus.FAILED, order.getStatus());
+        // When & Then
+        IllegalStateException exception = assertThrows(IllegalStateException.class, order::markAsCancelled);
+        assertEquals(ErrorCode.ORDER_CANCEL_INVALID_CODE, exception.getMessage());
     }
 }

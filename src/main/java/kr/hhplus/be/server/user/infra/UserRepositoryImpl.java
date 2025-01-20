@@ -12,11 +12,9 @@ import java.util.Optional;
 public class UserRepositoryImpl implements UserRepository {
 
     private final UserJpaRepository userJpaRepository;
-    private final UserMapper userMapper;
 
     @Override
     public Optional<User> findById(Long id) {
-        return userJpaRepository.findById(id)
-                .map(userMapper::toDomain);
+        return userJpaRepository.findById(id);
     }
 }

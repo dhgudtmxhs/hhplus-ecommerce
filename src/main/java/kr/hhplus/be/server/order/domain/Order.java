@@ -1,81 +1,70 @@
 package kr.hhplus.be.server.order.domain;
 
-import kr.hhplus.be.server.coupon.domain.Coupon;
-import kr.hhplus.be.server.coupon.domain.DiscountType;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.*;
+import kr.hhplus.be.server.common.entity.BaseEntity;
+import kr.hhplus.be.server.common.exception.ErrorCode;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Getter
-@AllArgsConstructor
-public class Order {
+@NoArgsConstructor
+@Entity
+@Table(name = "`order`")
+public class Order extends BaseEntity {
 
-    private final Long id;
-    private final Long userId;
-    private final Long totalPrice;
-    private final Long finalPrice;
-    private final Long userCouponId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
+
+    @Column(name = "total_price", nullable = false)
+    private Long totalPrice;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
     private OrderStatus status;
-    private final List<OrderItem> orderItems;
 
-    public static Order create(Long userId, List<OrderItem> orderItems, Coupon coupon, Long usedPoints) {
-        // 1. 총 주문 금액 계산
+    @Transient
+    private List<OrderItem> orderItems;
+
+    @Builder
+    public Order(Long id, Long userId, Long totalPrice, OrderStatus status, List<OrderItem> orderItems) {
+        this.id = id;
+        this.userId = userId;
+        this.totalPrice = totalPrice;
+        this.status = status;
+        this.orderItems = orderItems;
+    }
+
+    public static Order create(Long userId, List<OrderItem> orderItems) {
+
         Long totalPrice = orderItems.stream()
-                .mapToLong(item -> item.price() * item.quantity())
+                .mapToLong(OrderItem::calculateTotalPrice)
                 .sum();
 
-        // 2. 쿠폰 할인 계산
-        Long discountAmount = calculateDiscount(totalPrice, coupon);
-
-        // 3. 최종 결제 금액 계산 (포인트 적용)
-        Long finalPrice = totalPrice - discountAmount - usedPoints;
-        if (finalPrice < 0) {
-            throw new IllegalArgumentException("최종 결제 금액은 0원 이상이어야 합니다.");
-        }
-
-        // 4. Order 객체 생성
-        return new Order(
-                null,
-                userId,
-                totalPrice,
-                finalPrice,
-                (coupon != null) ? coupon.id() : null,
-                OrderStatus.PENDING,
-                orderItems
-        );
+        return Order.builder()
+                .userId(userId)
+                .totalPrice(totalPrice)
+                .status(OrderStatus.CREATED)
+                .orderItems(orderItems)
+                .build();
     }
 
-    private static Long calculateDiscount(Long totalPrice, Coupon coupon) {
-        if (coupon == null) {
-            return 0L;
+    public void markAsCompleted() {
+        if (this.status != OrderStatus.CREATED) {
+            throw new IllegalStateException(ErrorCode.ORDER_STATUS_CHANGE_INVALID_CODE);
         }
-        if (coupon.discountType() == DiscountType.FIXED) {
-            return coupon.discountAmount();
-        } else if (coupon.discountType() == DiscountType.PERCENT) {
-            return totalPrice * coupon.discountAmount() / 100;
-        }
-        return 0L;
+        this.status = OrderStatus.COMPLETED;
     }
 
-    // 상태 변경 메서드
-    public void markAsPaid() {
-        if (this.status != OrderStatus.PENDING) {
-            throw new IllegalStateException("결제 대기 상태에서만 결제를 완료할 수 있습니다.");
-        }
-        this.status = OrderStatus.PAID;
-    }
-
-    public void markAsFailed() {
-        if (this.status != OrderStatus.PENDING) {
-            throw new IllegalStateException("결제 대기 상태에서만 결제 실패로 변경할 수 있습니다.");
-        }
-        this.status = OrderStatus.FAILED;
-    }
-
-    public void cancelOrder() {
-        if (this.status == OrderStatus.PAID) {
-            throw new IllegalStateException("결제 완료된 주문은 취소할 수 없습니다.");
+    public void markAsCancelled() {
+        if (this.status == OrderStatus.COMPLETED) {
+            throw new IllegalStateException(ErrorCode.ORDER_CANCEL_INVALID_CODE);
         }
         this.status = OrderStatus.CANCELLED;
     }

@@ -1,12 +1,9 @@
 package kr.hhplus.be.server.payment;
 
-import kr.hhplus.be.server.order.domain.Order;
 import kr.hhplus.be.server.payment.domain.Payment;
-import kr.hhplus.be.server.payment.domain.PaymentMethod;
 import kr.hhplus.be.server.payment.domain.PaymentRepository;
 import kr.hhplus.be.server.payment.domain.PaymentService;
 import kr.hhplus.be.server.payment.domain.PaymentStatus;
-import kr.hhplus.be.server.point.domain.Point;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -14,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class PaymentServiceTest {
@@ -30,36 +28,48 @@ public class PaymentServiceTest {
     }
 
     @Test
-    void 충분한_포인트로_결제하면_결제가_성공하고_저장된다() {
+    void 결제를_정상적으로_생성하고_저장한다() {
         // Given
-        Order order = new Order(1L, 1L, 1000L, 1000L, null, null, null);
-        Point point = new Point(1L, 1L, 1500L);
-        Payment expectedPayment = new Payment(null, order.getId(), order.getFinalPrice(), PaymentMethod.POINT, PaymentStatus.SUCCESS);
+        Long orderId = 1L;
+        Long orderPrice = 1000L;
+        Long finalPrice = 800L;
+        Long couponId = 101L;
+
+        Payment expectedPayment = Payment.builder()
+                .orderId(orderId)
+                .orderPrice(orderPrice)
+                .finalPrice(finalPrice)
+                .couponId(couponId)
+                .status(PaymentStatus.SUCCESS)
+                .build();
 
         when(paymentRepository.save(any(Payment.class))).thenReturn(expectedPayment);
 
         // When
-        Payment result = paymentService.processPayment(order, point);
+        Payment result = paymentService.createPayment(orderId, orderPrice, finalPrice, couponId);
 
         // Then
-        assertEquals(PaymentStatus.SUCCESS, result.status());
+        assertNotNull(result);
+        assertEquals(orderId, result.getOrderId());
+        assertEquals(orderPrice, result.getOrderPrice());
+        assertEquals(finalPrice, result.getFinalPrice());
+        assertEquals(PaymentStatus.SUCCESS, result.getStatus());
         verify(paymentRepository).save(any(Payment.class));
     }
 
     @Test
-    void 부족한_포인트로_결제하면_결제가_실패하고_저장된다() {
+    void 결제금액이_음수일_경우_예외를_발생시킨다() {
         // Given
-        Order order = new Order(1L, 1L, 1000L, 1000L, null, null, null);
-        Point point = new Point(1L, 1L, 500L);
-        Payment expectedPayment = new Payment(null, order.getId(), order.getFinalPrice(), PaymentMethod.POINT, PaymentStatus.FAILED);
+        Long orderId = 1L;
+        Long orderPrice = 1000L;
+        Long finalPrice = -500L; // Invalid final price
+        Long couponId = 101L;
 
-        when(paymentRepository.save(any(Payment.class))).thenReturn(expectedPayment);
+        // When & Then
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            paymentService.createPayment(orderId, orderPrice, finalPrice, couponId);
+        });
 
-        // When
-        Payment result = paymentService.processPayment(order, point);
-
-        // Then
-        assertEquals(PaymentStatus.FAILED, result.status());
-        verify(paymentRepository).save(any(Payment.class));
+        verify(paymentRepository, never()).save(any(Payment.class));
     }
 }

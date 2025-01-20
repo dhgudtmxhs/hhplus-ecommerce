@@ -4,6 +4,5 @@ import java.util.List;
 
 public record OrderCommand(
         Long userId,
-        List<ProductOrderCommand> products,
-        Long couponId
+        List<ProductOrderCommand> productOrderCommands
 ) {}

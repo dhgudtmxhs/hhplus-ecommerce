@@ -1,4 +1,6 @@
 package kr.hhplus.be.server.coupon.application;
 
-public record IssueCouponCommand(Long userId, String couponCode) {
-}
+public record IssueCouponCommand(
+        Long userId,
+        Long couponId
+){}

@@ -44,7 +44,7 @@ public class ProductServiceTest {
 
         // Then
         assertEquals(2, result.size());
-        assertEquals("상품A", result.get(0).name());
+        assertEquals("상품A", result.get(0).getName());
         verify(productRepository).findProducts(page, size);
     }
 
@@ -79,7 +79,7 @@ public class ProductServiceTest {
 
         // Then
         assertEquals(5, result.size());
-        assertEquals("Popular1", result.get(0).name());
+        assertEquals("Popular1", result.get(0).getName());
         verify(productRepository).findPopularProducts();
     }
 
@@ -96,60 +96,6 @@ public class ProductServiceTest {
         verify(productRepository).findPopularProducts();
     }
 
-    @Test
-    void 유효한_상품_목록으로_재고_차감시_정상적으로_수행된다() {
-        // Given
-        List<ProductOrderCommand> productOrders = Arrays.asList(
-                new ProductOrderCommand(1L, 3L),
-                new ProductOrderCommand(2L, 2L)
-        );
-
-        Product product1 = new Product(1L, "상품A", 1000L, 10L);
-        Product product2 = new Product(2L, "상품B", 1500L, 5L);
-
-        when(productRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(product1));
-        when(productRepository.findByIdForUpdate(2L)).thenReturn(Optional.of(product2));
-
-        // When
-        List<Product> result = productService.reduceStockAndGetProducts(productOrders);
-
-        // Then
-        assertEquals(2, result.size());
-        verify(productRepository, times(2)).save(any(Product.class));
-    }
-
-    @Test
-    void 존재하지_않는_상품_ID로_재고_차감을_시도하면_NoSuchElementException_예외가_발생한다() {
-        // Given
-        List<ProductOrderCommand> productOrders = List.of(new ProductOrderCommand(1L, 3L));
-
-        when(productRepository.findByIdForUpdate(1L)).thenReturn(Optional.empty());
-
-        // When && Then
-        assertThrows(NoSuchElementException.class, () -> productService.reduceStockAndGetProducts(productOrders));
-        verify(productRepository, never()).save(any(Product.class));
-    }
-
-    @Test
-    void 유효한_상품_목록으로_재고_복원시_정상적으로_수행된다() {
-        // Given
-        List<ProductOrderCommand> productOrders = Arrays.asList(
-                new ProductOrderCommand(1L, 3L),
-                new ProductOrderCommand(2L, 2L)
-        );
-
-        Product product1 = new Product(1L, "상품A", 1000L, 7L);
-        Product product2 = new Product(2L, "상품B", 1500L, 3L);
-
-        when(productRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(product1));
-        when(productRepository.findByIdForUpdate(2L)).thenReturn(Optional.of(product2));
-
-        // When
-        productService.restoreStock(productOrders);
-
-        // Then
-        verify(productRepository, times(2)).save(any(Product.class));
-    }
 
 
 

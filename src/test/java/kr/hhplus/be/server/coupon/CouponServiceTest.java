@@ -1,6 +1,8 @@
 package kr.hhplus.be.server.coupon;
 
 import kr.hhplus.be.server.coupon.domain.*;
+import kr.hhplus.be.server.coupon.infra.CouponJpaRepository;
+import kr.hhplus.be.server.coupon.infra.UserCouponJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -20,6 +22,13 @@ public class CouponServiceTest {
 
     @InjectMocks
     private CouponService couponService;
+
+    @Mock
+    private UserCouponJpaRepository userCouponJpaRepository;
+
+    @Mock
+    private CouponJpaRepository couponJpaRepository;
+
 
     @BeforeEach
     void setUp() {
@@ -62,38 +71,48 @@ public class CouponServiceTest {
     }
 
     @Test
-    void 유효한_쿠폰코드로_쿠폰_발급시_정상적으로_유저쿠폰을_반환한다() {
+    void 유효한_쿠폰_ID로_쿠폰_발급시_정상적으로_유저쿠폰을_반환한다() {
         // Given
         Long userId = 1L;
-        String couponCode = "COUPON1";
-        Coupon coupon = new Coupon(1L, couponCode, DiscountType.FIXED, 1000L, 10L, 5L);
-        UserCoupon expectedUserCoupon = new UserCoupon(null, userId, coupon.id(), false);
-        Coupon updatedCoupon = coupon.incrementIssuedCount();
+        Long couponId = 101L;
 
-        when(couponRepository.findByCouponCodeForUpdate(couponCode)).thenReturn(Optional.of(coupon));
-        when(couponRepository.saveUserCoupon(any(UserCoupon.class))).thenReturn(expectedUserCoupon);
+        Coupon coupon = new Coupon(couponId, "COUPON1", DiscountType.FIXED, 1000L, 10L, 5L);
+        UserCoupon expectedUserCoupon = new UserCoupon(null, userId, couponId, false);
+
+        // Mock 설정: 중복 발급 없음
+        when(couponRepository.findByCouponIdAndUserIdForUpdate(couponId, userId))
+                .thenReturn(Optional.empty());  // 중복 발급 없음
+
+        // Mock 설정: 쿠폰 존재
+        when(couponRepository.findByIdForUpdate(couponId))
+                .thenReturn(Optional.of(coupon));
+
+        // Mock 설정: 유저 쿠폰 저장
+        when(couponRepository.saveUserCoupon(any(UserCoupon.class)))
+                .thenReturn(expectedUserCoupon);
 
         // When
-        UserCoupon actualUserCoupon = couponService.issueCoupon(userId, couponCode);
+        UserCoupon actualUserCoupon = couponService.issueCoupon(userId, couponId);
 
         // Then
         assertEquals(expectedUserCoupon, actualUserCoupon);
-        verify(couponRepository).findByCouponCodeForUpdate(couponCode);
-        verify(couponRepository).saveCoupon(updatedCoupon);
+        verify(couponRepository).findByIdForUpdate(couponId);
+        verify(couponRepository).findByCouponIdAndUserIdForUpdate(couponId, userId);
         verify(couponRepository).saveUserCoupon(any(UserCoupon.class));
     }
 
+
     @Test
-    void 유효하지_않은_쿠폰코드로_발급시_IllegalArgumentException_예외가_발생한다() {
+    void 유효하지_않은_쿠폰_ID로_발급시_IllegalArgumentException_예외가_발생한다() {
         // Given
         Long userId = 1L;
-        String invalidCouponCode = "INVALID_COUPON1";
+        Long invalidCouponId = 999L;
 
-        when(couponRepository.findByCouponCodeForUpdate(invalidCouponCode)).thenReturn(Optional.empty());
+        when(couponRepository.findByIdForUpdate(invalidCouponId)).thenReturn(Optional.empty());
 
         // When && Then
-        assertThrows(IllegalArgumentException.class, () -> couponService.issueCoupon(userId, invalidCouponCode));
-        verify(couponRepository).findByCouponCodeForUpdate(invalidCouponCode);
+        assertThrows(IllegalArgumentException.class, () -> couponService.issueCoupon(userId, invalidCouponId));
+        verify(couponRepository).findByIdForUpdate(invalidCouponId);
         verify(couponRepository, never()).saveCoupon(any());
         verify(couponRepository, never()).saveUserCoupon(any());
     }
@@ -136,16 +155,19 @@ public class CouponServiceTest {
         Long userId = 1L;
         Long couponId = 101L;
         UserCoupon userCoupon = new UserCoupon(1L, userId, couponId, false);
-        UserCoupon updatedUserCoupon = userCoupon.markAsUsed();
+        Coupon coupon = new Coupon(couponId, "TestCoupon", DiscountType.FIXED, 1000L, 10L, 5L);
 
         when(couponRepository.findByUserIdAndCouponIdAndIsUsedFalseForUpdate(userId, couponId))
                 .thenReturn(Optional.of(userCoupon));
+        when(couponRepository.findCouponById(couponId))
+                .thenReturn(Optional.of(coupon));
 
         // When
-        couponService.useCoupon(userId, couponId);
+        Coupon result = couponService.useCoupon(userId, couponId);
 
         // Then
-        verify(couponRepository).saveUserCoupon(updatedUserCoupon);
+        verify(couponRepository).saveUserCoupon(userCoupon);
+        assertEquals(coupon, result);
     }
 
     @Test
@@ -161,5 +183,4 @@ public class CouponServiceTest {
         assertThrows(IllegalArgumentException.class, () -> couponService.useCoupon(userId, invalidCouponId));
         verify(couponRepository, never()).saveUserCoupon(any());
     }
-
 }

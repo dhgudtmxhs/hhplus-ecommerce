@@ -1,5 +1,7 @@
 package kr.hhplus.be.server.coupon.domain;
 
+import kr.hhplus.be.server.common.exception.ErrorCode;
+import kr.hhplus.be.server.coupon.infra.UserCouponJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,31 +18,46 @@ public class CouponService {
         return couponRepository.findByUserIdAndIsUsedFalse(userId);
     }
 
+    public Coupon getUserCoupon(Long userId, Long couponId) {
+        return couponRepository.findByUserIdAndCouponIdAndIsUsedFalse(userId, couponId)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.COUPON_ALREADY_USED_OR_NOT_FOUND_CODE));
+    }
+
     @Transactional
-    public UserCoupon issueCoupon(Long userId, String couponCode) {
-        Coupon coupon = couponRepository.findByCouponCodeForUpdate(couponCode)
-                .orElseThrow(() -> new IllegalArgumentException("발급 가능한 쿠폰이 없습니다."));
+    public UserCoupon issueCoupon(Long userId, Long couponId) {
 
-        Coupon updatedCoupon = coupon.incrementIssuedCount();
+        Coupon coupon = couponRepository.findByIdForUpdate(couponId)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.COUPON_NOT_FOUND_CODE));
 
-        couponRepository.saveCoupon(updatedCoupon);
+        couponRepository.findByCouponIdAndUserIdForUpdate(couponId, userId)
+                .ifPresent(issuedCoupon -> {
+                    throw new IllegalArgumentException(ErrorCode.COUPON_ALREADY_ISSUED_CODE);
+                });
 
-        UserCoupon userCoupon = new UserCoupon(null, userId, coupon.id(), false);
+        coupon.issue();
+        couponRepository.saveCoupon(coupon);
+
+        UserCoupon userCoupon = UserCoupon.builder()
+                .userId(userId)
+                .couponId(coupon.getId())
+                .isUsed(false)
+                .build();
+
         return couponRepository.saveUserCoupon(userCoupon);
     }
 
-    public Coupon getUserCoupon(Long userId, Long couponId) {
-        return couponRepository.findByUserIdAndCouponIdAndIsUsedFalse(userId, couponId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 쿠폰이 사용되었거나 존재하지 않습니다."));
-    }
-
-    @Transactional
-    public void useCoupon(Long userId, Long couponId) {
+    public Coupon useCoupon(Long userId, Long couponId) {
         UserCoupon userCoupon = couponRepository.findByUserIdAndCouponIdAndIsUsedFalseForUpdate(userId, couponId)
-                .orElseThrow(() -> new IllegalArgumentException("쿠폰이 사용되었거나 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.COUPON_ALREADY_USED_OR_NOT_FOUND_CODE));
 
-        UserCoupon updatedUserCoupon = userCoupon.markAsUsed();
+        userCoupon.markAsUsed();
 
-        couponRepository.saveUserCoupon(updatedUserCoupon);
+        couponRepository.saveUserCoupon(userCoupon);
+
+        return couponRepository.findCouponById(userCoupon.getCouponId())
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.COUPON_NOT_FOUND_CODE));
+
     }
+
+
 }

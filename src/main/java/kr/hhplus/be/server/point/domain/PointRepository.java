@@ -7,5 +7,5 @@ public interface PointRepository {
 
     Optional<Point> findByUserIdForUpdate(Long userId);
 
-    void save(Point updatedPoint);
+    Point save(Point updatedPoint);
 }
