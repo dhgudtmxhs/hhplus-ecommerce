@@ -3,6 +3,7 @@ package kr.hhplus.be.server.user.domain;
 import kr.hhplus.be.server.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
 
@@ -12,6 +13,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    @Transactional(readOnly = true)
     public User getUser(Long userId) {
         User.validateId(userId);
 

@@ -13,6 +13,7 @@ public class PointService {
 
     private final PointRepository pointRepository;
 
+    @Transactional(readOnly = true)
     public Point getPoint(Long userId) {
         return pointRepository.findByUserId(userId)
                 .orElseGet(() -> pointRepository.save(Point.builder()

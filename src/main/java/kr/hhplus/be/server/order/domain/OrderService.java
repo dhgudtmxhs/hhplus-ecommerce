@@ -4,6 +4,7 @@ import kr.hhplus.be.server.common.exception.ErrorCode;
 import kr.hhplus.be.server.order.application.OrderItemData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -43,6 +44,7 @@ public class OrderService {
         return order;
     }
 
+    @Transactional(readOnly = true)
     public Order getOrder(Long orderId) {
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> new NoSuchElementException(ErrorCode.ORDER_NOT_FOUND_CODE));

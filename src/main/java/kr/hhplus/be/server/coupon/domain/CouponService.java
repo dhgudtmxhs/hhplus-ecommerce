@@ -18,6 +18,7 @@ public class CouponService {
         return couponRepository.findByUserIdAndIsUsedFalse(userId);
     }
 
+    @Transactional(readOnly = true)
     public Coupon getUserCoupon(Long userId, Long couponId) {
         return couponRepository.findByUserIdAndCouponIdAndIsUsedFalse(userId, couponId)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.COUPON_ALREADY_USED_OR_NOT_FOUND_CODE));

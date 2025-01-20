@@ -17,14 +17,17 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
+    @Transactional(readOnly = true)
     public List<Product> getProducts(int page, int size) {
         return productRepository.findProducts(page, size);
     }
 
+    @Transactional(readOnly = true)
     public long getTotalCount() {
         return productRepository.countTotalProducts();
     }
 
+    @Transactional(readOnly = true)
     public List<Product> getPopularProducts() {
         return productRepository.findPopularProducts();
     }
