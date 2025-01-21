@@ -65,6 +65,10 @@ dependencies {
 
 	// Spring Validator
 	implementation("org.springframework.boot:spring-boot-starter-validation")
+
+	// Redis
+	implementation("org.springframework.boot:spring-boot-starter-data-redis")
+	implementation("com.fasterxml.jackson.core:jackson-databind")
 }
 
 val querydslDir = "${project.buildDir}/generated/sources/annotationProcessor/java/main"
