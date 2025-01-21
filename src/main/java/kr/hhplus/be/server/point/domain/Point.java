@@ -27,6 +27,10 @@ public class Point extends BaseEntity {
     @Column(nullable = false)
     private Long point;
 
+    @Version
+    @Column(name = "version", nullable = false)
+    private Long version;
+
     @Builder
     public Point(Long id, Long userId, Long point) {
         this.id = id;
