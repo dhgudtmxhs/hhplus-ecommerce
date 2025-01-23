@@ -1,7 +1,11 @@
 package kr.hhplus.be.server.point.domain;
 
+import jakarta.persistence.OptimisticLockException;
 import kr.hhplus.be.server.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,16 +26,21 @@ public class PointService {
                         .build()));
     }
 
+    @Retryable(
+            value = {OptimisticLockException.class, ObjectOptimisticLockingFailureException.class},
+            maxAttempts = 5, // 재시도 횟수
+            backoff = @Backoff(delay = 100, multiplier = 2) // 지수 백오프 적용
+    )
     @Transactional
     public Point chargePoint(Long userId, Long amount) {
         Point.validatePoint(amount);
 
-        Point point = pointRepository.findByUserIdForUpdate(userId)
+        Point point = pointRepository.findByUserId(userId)
                 .orElseThrow(() -> new NoSuchElementException(ErrorCode.POINT_NOT_FOUND_CODE));
 
         point.charge(amount);
 
-        return point;
+        return pointRepository.save(point);
     }
 
 
