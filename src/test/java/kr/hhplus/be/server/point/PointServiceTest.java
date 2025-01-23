@@ -89,13 +89,16 @@ public class PointServiceTest {
         Point point = new Point(1L, 1L, 5_000L);
 
         when(pointRepository.findByUserIdForUpdate(userId)).thenReturn(Optional.of(point));
+        when(pointRepository.save(point)).thenAnswer(invocation -> invocation.getArgument(0));
 
         // When
-        Point result = pointService.chargePoint(userId, chargeAmount);
+        pointService.chargePoint(point.getUserId(), chargeAmount);
 
         // Then
-        assertEquals(8_000L, result.getPoint());
-        assertEquals(userId, result.getUserId());
+        verify(pointRepository).save(point);
+        Point updatedPoint = pointRepository.findByUserIdForUpdate(userId).orElseThrow();
+        assertEquals(8_000L, updatedPoint.getPoint());
+        assertEquals(userId, updatedPoint.getUserId());
     }
 
     @Test

@@ -1,12 +1,12 @@
 package kr.hhplus.be.server.coupon.infra;
 
-import aj.org.objectweb.asm.commons.Remapper;
 import jakarta.persistence.LockModeType;
-import kr.hhplus.be.server.coupon.domain.Coupon;
+import jakarta.persistence.QueryHint;
 import kr.hhplus.be.server.coupon.domain.UserCoupon;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
@@ -22,6 +22,7 @@ public interface UserCouponJpaRepository extends JpaRepository<UserCoupon, Long>
                                                                         @Param("couponId") Long couponId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @QueryHints({@QueryHint(name = "jakarta.persistence.lock.timeout", value = "1000")})
     @Query("SELECT uc FROM UserCoupon uc WHERE uc.couponId = :couponId AND uc.userId = :userId")
     Optional<UserCoupon> findByCouponIdAndUserIdForUpdate(Long couponId, Long userId);
 }
