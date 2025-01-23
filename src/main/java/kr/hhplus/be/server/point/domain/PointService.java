@@ -26,16 +26,11 @@ public class PointService {
                         .build()));
     }
 
-    @Retryable(
-            value = {OptimisticLockException.class, ObjectOptimisticLockingFailureException.class},
-            maxAttempts = 5, // 재시도 횟수
-            backoff = @Backoff(delay = 100, multiplier = 2) // 지수 백오프 적용
-    )
     @Transactional
     public Point chargePoint(Long userId, Long amount) {
         Point.validatePoint(amount);
 
-        Point point = pointRepository.findByUserId(userId)
+        Point point = pointRepository.findByUserIdForUpdate(userId)
                 .orElseThrow(() -> new NoSuchElementException(ErrorCode.POINT_NOT_FOUND_CODE));
 
         point.charge(amount);

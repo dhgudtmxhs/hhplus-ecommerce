@@ -49,7 +49,7 @@ public class PointConcurrencyTest {
 
     @Test
     void 한_사용자가_동시에_포인트를_충전해도_포인트가_정상적으로_누적된다() throws InterruptedException, ExecutionException {
-        int threadCount = 10;
+        int threadCount = 100;
         Long chargeAmountPerThread = 1000L;
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         List<Callable<Void>> tasks = new ArrayList<>();
