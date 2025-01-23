@@ -179,4 +179,60 @@ public class OrderFacadeConcurrencyTest {
         // 실패 요청 수는 총 요청 수 - 성공 요청 수
         assertThat(exceptions.size()).isEqualTo(threadCount - successCount);
     }
+
+    @Test
+    @DisplayName("동일 사용자가 동일 주문을 동시에 요청하면 하나만 성공하고 나머지는 실패한다")
+    void 동일_사용자_동일_주문_중복_방지() throws InterruptedException {
+        int threadCount = 5; // 동시 요청 개수
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+        CountDownLatch latch = new CountDownLatch(1); // 모든 스레드가 동시에 시작하도록 대기
+
+        List<Future<Boolean>> results = new ArrayList<>();
+        List<Throwable> exceptions = Collections.synchronizedList(new ArrayList<>());
+
+        for (int i = 0; i < threadCount; i++) {
+            results.add(executorService.submit(() -> {
+                try {
+                    latch.await(); // 모든 스레드가 동시에 시작
+                    OrderCommand command = new OrderCommand(
+                            userId,
+                            Collections.singletonList(new ProductOrderCommand(productId, 10L))
+                    );
+                    orderFacade.createOrder(command);
+                    return true;
+                } catch (Exception e) {
+                    exceptions.add(e);
+                    return false;
+                }
+            }));
+        }
+
+        latch.countDown(); // 모든 스레드 시작
+        executorService.shutdown();
+        executorService.awaitTermination(1, TimeUnit.MINUTES);
+
+        long successCount = results.stream()
+                .map(result -> {
+                    try {
+                        return result.get();
+                    } catch (Exception e) {
+                        return false;
+                    }
+                })
+                .filter(Boolean::booleanValue)
+                .count();
+
+        // 성공한 주문은 단 하나여야 함
+        assertThat(successCount).isEqualTo(1);
+
+        // 실패한 주문은 총 요청 수 - 성공한 주문 수
+        assertThat(exceptions.size()).isEqualTo(threadCount - successCount);
+
+        // 재고는 정확히 감소해야 함
+        Long finalStock = productJpaRepository.findById(productId)
+                .map(Product::getStock)
+                .orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다."));
+        assertThat(finalStock).isEqualTo(90L); // 한 번의 주문만 성공했으므로
+    }
+
 }
