@@ -35,6 +35,12 @@ spring:
       host: localhost
       port: 6379
 
+redisson:
+  singleServerConfig:
+    address: "redis://localhost:6379"
+    connectionPoolSize: 10
+    connectionMinimumIdleSize: 2
+
 logging:
   level:
     root: INFO
