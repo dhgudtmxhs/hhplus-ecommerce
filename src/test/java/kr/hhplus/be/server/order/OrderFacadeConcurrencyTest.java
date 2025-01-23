@@ -61,7 +61,7 @@ public class OrderFacadeConcurrencyTest {
 
     @Test
     void 여러_사용자가_동시에_주문을_요청해도_재고를_초과하지_않고_초과하면_주문에_실패한다() throws InterruptedException, ExecutionException {
-        int threadCount = 10;
+        int threadCount = 100;
         int ordersPerThread = 10;
         long quantityPerOrder = 1L;
 
@@ -77,9 +77,10 @@ public class OrderFacadeConcurrencyTest {
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
 
         // 사용자별 작업 생성
-        List<Callable<Boolean>> tasks = new ArrayList<>();
+        List<Callable<Integer>> tasks = new ArrayList<>();
         for (Long userId : userIds) {
             tasks.add(() -> {
+                int failures = 0;
                 for (int i = 0; i < ordersPerThread; i++) {
                     OrderCommand command = new OrderCommand(
                             userId,
@@ -88,28 +89,38 @@ public class OrderFacadeConcurrencyTest {
                     try {
                         orderFacade.createOrder(command);
                     } catch (Exception e) {
-                        return false; // 주문 실패
+                        failures++; // 주문 실패 카운트 증가
                     }
                 }
-                return true; // 모든 주문 성공
+                return failures; // 실패 횟수 반환
             });
         }
 
         // 작업 실행
-        List<Future<Boolean>> results = executorService.invokeAll(tasks);
+        List<Future<Integer>> results = executorService.invokeAll(tasks);
         executorService.shutdown();
         executorService.awaitTermination(1, TimeUnit.MINUTES);
 
-        // 모든 스레드가 성공했는지 확인
-        for (Future<Boolean> result : results) {
-            assertThat(result.get()).isTrue();
+        int totalFailures = 0;
+        for (Future<Integer> result : results) {
+            totalFailures += result.get(); // 각 스레드의 실패 횟수를 합산
         }
+
+        // 실패한 주문 수가 0보다 큰지 확인
+        assertThat(totalFailures).isGreaterThan(0);
 
         // 재고가 0이 되었는지 확인
         Long finalStock = productJpaRepository.findById(productId)
                 .map(Product::getStock)
                 .orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다."));
         assertThat(finalStock).isEqualTo(0L);
+
+        // 총 시도 주문 수 계산
+        int totalAttempts = threadCount * ordersPerThread;
+        int totalSuccesses = totalAttempts - totalFailures;
+
+        // 성공한 주문 수가 초기 재고와 일치하는지 확인
+        assertThat(totalSuccesses).isEqualTo(initialStock.intValue());
     }
 
 
