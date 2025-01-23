@@ -64,37 +64,54 @@ public class OrderFacadeConcurrencyTest {
         int threadCount = 10;
         int ordersPerThread = 10;
         long quantityPerOrder = 1L;
+
+        // 여러 사용자 생성
+        List<Long> userIds = new ArrayList<>();
+        for (int i = 0; i < threadCount; i++) {
+            User user = userJpaRepository.save(User.builder()
+                    .name("User " + i)
+                    .build());
+            userIds.add(user.getId());
+        }
+
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
 
-        Callable<Boolean> orderTask = () -> {
-            for (int i = 0; i < ordersPerThread; i++) {
-                OrderCommand command = new OrderCommand(
-                        userId,
-                        Collections.singletonList(new ProductOrderCommand(productId, quantityPerOrder))
-                );
-                try {
-                    orderFacade.createOrder(command);
-                } catch (Exception e) {
-                    return false;
+        // 사용자별 작업 생성
+        List<Callable<Boolean>> tasks = new ArrayList<>();
+        for (Long userId : userIds) {
+            tasks.add(() -> {
+                for (int i = 0; i < ordersPerThread; i++) {
+                    OrderCommand command = new OrderCommand(
+                            userId,
+                            Collections.singletonList(new ProductOrderCommand(productId, quantityPerOrder))
+                    );
+                    try {
+                        orderFacade.createOrder(command);
+                    } catch (Exception e) {
+                        return false; // 주문 실패
+                    }
                 }
-            }
-            return true;
-        };
+                return true; // 모든 주문 성공
+            });
+        }
 
-        List<Callable<Boolean>> tasks = Collections.nCopies(threadCount, orderTask);
+        // 작업 실행
         List<Future<Boolean>> results = executorService.invokeAll(tasks);
         executorService.shutdown();
         executorService.awaitTermination(1, TimeUnit.MINUTES);
 
+        // 모든 스레드가 성공했는지 확인
         for (Future<Boolean> result : results) {
             assertThat(result.get()).isTrue();
         }
 
+        // 재고가 0이 되었는지 확인
         Long finalStock = productJpaRepository.findById(productId)
                 .map(Product::getStock)
                 .orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다."));
         assertThat(finalStock).isEqualTo(0L);
     }
+
 
     @Test
     void 여러_상품을_포함한_주문에서_하나라도_재고가_부족하면_재고를_초과하지_않고_주문에_실패한다() throws InterruptedException {
@@ -122,10 +139,20 @@ public class OrderFacadeConcurrencyTest {
                 .price(3000L)
                 .build());
 
+        // 여러 사용자 생성
+        List<Long> userIds = new ArrayList<>();
         for (int i = 0; i < threadCount; i++) {
+            User user = userJpaRepository.save(User.builder()
+                    .name("User " + i)
+                    .build());
+            userIds.add(user.getId());
+        }
+
+        for (int i = 0; i < threadCount; i++) {
+            Long userId = userIds.get(i); // 각 스레드에 고유한 userId 할당
             futures.add(executorService.submit(() -> {
                 try {
-                    latch.await();
+                    latch.await(); // 모든 스레드가 동시에 시작
                     OrderCommand command = new OrderCommand(
                             userId,
                             List.of(
