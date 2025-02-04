@@ -52,7 +52,7 @@ public class CouponConcurrencyTest {
 
     @Test
     void 여러_사용자가_동시에_쿠폰을_발급해도_최대_사용_가능_수를_초과하지_않는다() throws InterruptedException {
-        int threadCount = 10; // 동시 요청 수
+        int threadCount = 150; // 동시 요청 수
         int maxCoupons = usageLimit.intValue(); // 최대 쿠폰 발급 수
 
         List<Long> userIds = new ArrayList<>();
@@ -106,7 +106,7 @@ public class CouponConcurrencyTest {
 
     @Test
     void 동일_사용자가_동일_쿠폰을_여러_번_요청해도_중복_발급되지_않는다() throws InterruptedException {
-        int requestCount = 10;
+        int requestCount = 100;
         ExecutorService executorService = Executors.newFixedThreadPool(requestCount);
         List<Throwable> exceptions = new ArrayList<>();
         List<Future<UserCoupon>> futures = new ArrayList<>();
