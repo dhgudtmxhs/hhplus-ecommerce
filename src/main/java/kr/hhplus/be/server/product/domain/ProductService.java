@@ -3,6 +3,7 @@ package kr.hhplus.be.server.product.domain;
 import kr.hhplus.be.server.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,11 +28,11 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(cacheNames = "popularProducts", key = "'popularProducts'")
+    @Cacheable(cacheNames = "popularProducts", key = "'popularProducts'", unless = "#result == null")
     public List<Product> getPopularProducts() {
-
         return productRepository.findPopularProducts();
     }
+
 
     public List<Product> findByIdForUpdate(List<Long> productIds) {
         List<Product> products = productIds.stream()
