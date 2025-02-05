@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = "order_item")
+@Table(name = "order_item", indexes = {
+        @Index(name = "idx_order_item_product_created", columnList = "product_id, created_at")
+})
 public class OrderItem extends BaseEntity {
 
     @Id
