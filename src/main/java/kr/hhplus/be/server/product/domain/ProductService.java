@@ -1,15 +1,14 @@
 package kr.hhplus.be.server.product.domain;
 
 import kr.hhplus.be.server.common.exception.ErrorCode;
-import kr.hhplus.be.server.order.application.ProductOrderCommand;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +27,9 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "popularProducts", key = "'popularProducts'")
     public List<Product> getPopularProducts() {
+
         return productRepository.findPopularProducts();
     }
 
