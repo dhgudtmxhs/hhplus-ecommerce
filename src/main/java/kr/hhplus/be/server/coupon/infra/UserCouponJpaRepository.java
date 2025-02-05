@@ -24,5 +24,6 @@ public interface UserCouponJpaRepository extends JpaRepository<UserCoupon, Long>
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @QueryHints({@QueryHint(name = "jakarta.persistence.lock.timeout", value = "1000")})
     @Query("SELECT uc FROM UserCoupon uc WHERE uc.couponId = :couponId AND uc.userId = :userId")
-    Optional<UserCoupon> findByCouponIdAndUserIdForUpdate(Long couponId, Long userId);
+    Optional<UserCoupon> findByCouponIdAndUserIdForUpdate(@Param("couponId") Long couponId,
+                                                          @Param("userId") Long userId);
 }

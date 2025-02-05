@@ -4,14 +4,17 @@ import jakarta.persistence.EntityManager;
 import kr.hhplus.be.server.order.infra.OrderItemJpaRepository;
 import kr.hhplus.be.server.product.domain.Product;
 import kr.hhplus.be.server.product.infra.ProductJpaRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.shaded.org.checkerframework.checker.units.qual.A;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -37,10 +40,16 @@ public class ProductControllerIntegrationTest {
     @Autowired
     private EntityManager entityManager;
 
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
     @BeforeEach
     void setUp() {
+        redisTemplate.delete("popularProducts::popularProducts");
+
         orderItemJpaRepository.deleteAll();
         productJpaRepository.deleteAll();
+        entityManager.flush();
 
         Product product1 = Product.builder()
                 .name("Product 1")
@@ -117,6 +126,11 @@ public class ProductControllerIntegrationTest {
                 .setParameter(6, created_at)
                 .setParameter(7, created_at)
                 .executeUpdate();
+    }
+
+    @AfterEach
+    void tearDown() {
+        redisTemplate.delete("popularProducts::popularProducts");
     }
 
     @Test
