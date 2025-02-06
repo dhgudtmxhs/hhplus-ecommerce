@@ -9,9 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @MappedSuperclass
-public abstract class BaseEntity implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public abstract class BaseEntity {
 
     @Column(name = "created_at", updatable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
