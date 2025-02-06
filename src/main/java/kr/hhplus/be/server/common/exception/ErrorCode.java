@@ -49,6 +49,8 @@ public enum ErrorCode {
     ORDER_PRICE_INVALID("E030", "주문 금액은 0보다 커야 합니다."),
     ORDER_NOT_FOUND("E031", "주문을 찾을 수 없습니다."),
     PAY_PRICE_INVALID("E032", "결제금액은 음수일 수 없습니다."),
+    COUPON_ISSUE_CLOSED("E033", "쿠폰 발급이 마감되었습니다."),
+    COUPON_ISSUE_FAILED("E034", "쿠폰 발급 처리 중 오류가 발생했습니다."),
 
     INTERNAL_SERVER_ERROR("E999", "예상치 못한 오류가 발생했습니다.");
 
@@ -89,6 +91,9 @@ public enum ErrorCode {
     public static final String ORDER_PRICE_INVALID_CODE = "E030";
     public static final String ORDER_NOT_FOUND_CODE = "E031";
     public static final String PAY_PRICE_INVALID_CODE = "E032";
+    public static final String COUPON_ISSUE_CLOSED_CODE = "E033";
+    public static final String COUPON_ISSUE_FAILED_CODE = "E034";
+
 
     public static final String INTERNAL_SERVER_ERROR_CODE = "E999";
 

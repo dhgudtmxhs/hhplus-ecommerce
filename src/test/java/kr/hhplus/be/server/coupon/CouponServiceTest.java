@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.coupon;
 
+import kr.hhplus.be.server.common.redis.coupon.RedisCouponService;
 import kr.hhplus.be.server.coupon.domain.*;
 import kr.hhplus.be.server.coupon.infra.CouponJpaRepository;
 import kr.hhplus.be.server.coupon.infra.UserCouponJpaRepository;
@@ -28,6 +29,9 @@ public class CouponServiceTest {
 
     @Mock
     private CouponJpaRepository couponJpaRepository;
+
+    @Mock
+    private RedisCouponService redisService;
 
 
     @BeforeEach
@@ -79,12 +83,9 @@ public class CouponServiceTest {
         Coupon coupon = new Coupon(couponId, "COUPON1", DiscountType.FIXED, 1000L, 10L, 5L);
         UserCoupon expectedUserCoupon = new UserCoupon(null, userId, couponId, false);
 
-        // Mock 설정: 중복 발급 없음
-        when(couponRepository.findByCouponIdAndUserIdForUpdate(couponId, userId))
-                .thenReturn(Optional.empty());  // 중복 발급 없음
-
-        // Mock 설정: 쿠폰 존재
-        when(couponRepository.findByIdForUpdate(couponId))
+        when(redisService.requestCoupon(userId, couponId))
+                .thenReturn(CouponIssueResult.COUPON_ISSUED);
+        when(couponRepository.findCouponById(couponId))
                 .thenReturn(Optional.of(coupon));
 
         // Mock 설정: 유저 쿠폰 저장
@@ -96,8 +97,9 @@ public class CouponServiceTest {
 
         // Then
         assertEquals(expectedUserCoupon, actualUserCoupon);
-        verify(couponRepository).findByIdForUpdate(couponId);
-        verify(couponRepository).findByCouponIdAndUserIdForUpdate(couponId, userId);
+        //verify(couponRepository).findByIdForUpdate(couponId);
+        verify(couponRepository).findCouponById(couponId);
+        //verify(couponRepository).findByCouponIdAndUserIdForUpdate(couponId, userId);
         verify(couponRepository).saveUserCoupon(any(UserCoupon.class));
     }
 
@@ -108,11 +110,14 @@ public class CouponServiceTest {
         Long userId = 1L;
         Long invalidCouponId = 999L;
 
+        when(redisService.requestCoupon(userId, invalidCouponId)).thenReturn(CouponIssueResult.COUPON_ISSUED);
+
         when(couponRepository.findByIdForUpdate(invalidCouponId)).thenReturn(Optional.empty());
 
         // When && Then
         assertThrows(IllegalArgumentException.class, () -> couponService.issueCoupon(userId, invalidCouponId));
-        verify(couponRepository).findByIdForUpdate(invalidCouponId);
+        //verify(couponRepository).findByIdForUpdate(invalidCouponId);
+        verify(couponRepository).findCouponById(invalidCouponId);
         verify(couponRepository, never()).saveCoupon(any());
         verify(couponRepository, never()).saveUserCoupon(any());
     }

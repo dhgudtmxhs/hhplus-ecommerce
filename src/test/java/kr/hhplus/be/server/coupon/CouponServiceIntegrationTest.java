@@ -1,13 +1,17 @@
 package kr.hhplus.be.server.coupon;
 
+import kr.hhplus.be.server.common.redis.coupon.CouponEventInitializer;
 import kr.hhplus.be.server.coupon.domain.*;
 import kr.hhplus.be.server.coupon.infra.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,10 +32,19 @@ public class CouponServiceIntegrationTest {
     @Autowired
     private UserCouponJpaRepository userCouponJpaRepository;
 
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+    @Autowired
+    private CouponEventInitializer couponEventInitializer;
+
     @BeforeEach
     public void setup() {
         couponJpaRepository.deleteAll();
         userCouponJpaRepository.deleteAll();
+        redisTemplate.getConnectionFactory().getConnection().flushDb();
+        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+
     }
 
     @Test
@@ -68,6 +81,8 @@ public class CouponServiceIntegrationTest {
         Coupon coupon = new Coupon(null, "COUPON1", DiscountType.FIXED, 1000L, 10L, 5L);
         couponJpaRepository.save(coupon);
         couponId = coupon.getId();
+
+        couponEventInitializer.initializeCouponStock(couponId, coupon.getUsageLimit().intValue(), Duration.ofHours(1));
 
         // When
         UserCoupon issuedCoupon = couponService.issueCoupon(userId, couponId);
