@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.coupon;
 
+import kr.hhplus.be.server.common.redis.coupon.CouponEventInitializer;
 import kr.hhplus.be.server.coupon.domain.Coupon;
 import kr.hhplus.be.server.coupon.domain.DiscountType;
 import kr.hhplus.be.server.coupon.infra.CouponJpaRepository;
@@ -11,10 +12,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.time.Duration;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -34,6 +38,12 @@ public class CouponControllerIntegrationTest {
     private CouponJpaRepository couponJpaRepository;
 
     @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+    @Autowired
+    private CouponEventInitializer couponEventInitializer;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     private Long existingUserId;
@@ -50,6 +60,9 @@ public class CouponControllerIntegrationTest {
                 .issuedCount(0L)
                 .build());
         couponId = coupon.getId();
+        redisTemplate.getConnectionFactory().getConnection().flushDb();
+        couponEventInitializer.initializeCouponStock(couponId, coupon.getUsageLimit().intValue(), Duration.ofHours(1));
+
     }
 
     @Test
