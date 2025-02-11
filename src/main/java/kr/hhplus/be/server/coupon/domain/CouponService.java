@@ -30,16 +30,7 @@ public class CouponService {
 
         CouponIssueResult redisResult = redisCouponService.requestCoupon(userId, couponId);
 
-        switch (redisResult) {
-            case COUPON_ALREADY_ISSUED:
-                throw new IllegalArgumentException(ErrorCode.COUPON_ALREADY_ISSUED_CODE);
-            case COUPON_ISSUE_CLOSED:
-                throw new IllegalArgumentException(ErrorCode.COUPON_ISSUE_CLOSED_CODE);
-            case COUPON_ISSUED:
-                break;
-            default:
-                throw new IllegalArgumentException(ErrorCode.COUPON_ISSUE_FAILED_CODE);
-        }
+        redisResult.validateOrThrow();
 
         try {
             Coupon coupon = couponRepository.findCouponById(couponId)
