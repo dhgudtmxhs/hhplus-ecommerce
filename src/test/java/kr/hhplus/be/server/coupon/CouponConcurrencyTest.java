@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.coupon;
 
+import kr.hhplus.be.server.coupon.infra.redis.CouponRedisInitializer;
 import kr.hhplus.be.server.coupon.domain.*;
 import kr.hhplus.be.server.coupon.infra.CouponJpaRepository;
 import kr.hhplus.be.server.coupon.infra.UserCouponJpaRepository;
@@ -9,7 +10,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -31,6 +35,12 @@ public class CouponConcurrencyTest {
     @Autowired
     private UserCouponJpaRepository userCouponJpaRepository;
 
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+    @Autowired
+    private CouponRedisInitializer couponRedisInitializer;
+
     private Long couponId;
     private Long usageLimit;
 
@@ -48,6 +58,11 @@ public class CouponConcurrencyTest {
                 .issuedCount(0L)
                 .build());
         couponId = coupon.getId();
+        redisTemplate.getConnectionFactory().getConnection().flushDb();
+        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+
+
+        couponRedisInitializer.initializeCouponStock(couponId, usageLimit.intValue(), Duration.ofHours(1));
     }
 
     @Test

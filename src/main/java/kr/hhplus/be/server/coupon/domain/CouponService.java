@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.coupon.domain;
 
 import kr.hhplus.be.server.common.exception.ErrorCode;
-import kr.hhplus.be.server.coupon.infra.UserCouponJpaRepository;
+import kr.hhplus.be.server.coupon.infra.redis.CouponRedisRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +13,7 @@ import java.util.List;
 public class CouponService {
 
     private final CouponRepository couponRepository;
+    private final CouponRedisRepository redisCouponService;
 
     public List<UserCoupon> getUserCoupons(Long userId) {
         return couponRepository.findByUserIdAndIsUsedFalse(userId);
@@ -27,24 +28,29 @@ public class CouponService {
     @Transactional
     public UserCoupon issueCoupon(Long userId, Long couponId) {
 
-        Coupon coupon = couponRepository.findByIdForUpdate(couponId)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.COUPON_NOT_FOUND_CODE));
+        CouponIssueResult redisResult = redisCouponService.requestCoupon(userId, couponId);
 
-        couponRepository.findByCouponIdAndUserIdForUpdate(couponId, userId)
-                .ifPresent(issuedCoupon -> {
-                    throw new IllegalArgumentException(ErrorCode.COUPON_ALREADY_ISSUED_CODE);
-                });
+        redisResult.validateOrThrow();
 
-        coupon.issue();
-        couponRepository.saveCoupon(coupon);
+        try {
+            Coupon coupon = couponRepository.findCouponById(couponId)
+                    .orElseThrow(() -> new IllegalArgumentException(ErrorCode.COUPON_NOT_FOUND_CODE));
 
-        UserCoupon userCoupon = UserCoupon.builder()
-                .userId(userId)
-                .couponId(coupon.getId())
-                .isUsed(false)
-                .build();
+            coupon.issue();
+            couponRepository.saveCoupon(coupon);
 
-        return couponRepository.saveUserCoupon(userCoupon);
+            UserCoupon userCoupon = UserCoupon.builder()
+                    .userId(userId)
+                    .couponId(coupon.getId())
+                    .isUsed(false)
+                    .build();
+
+            return couponRepository.saveUserCoupon(userCoupon);
+
+        } catch (Exception e) {
+            redisCouponService.cancelCoupon(userId, couponId);
+            throw e;
+        }
     }
 
     public Coupon useCoupon(Long userId, Long couponId) {
