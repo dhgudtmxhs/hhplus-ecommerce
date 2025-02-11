@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLOutput;
 import java.util.List;
 
 @RestController
@@ -22,9 +23,8 @@ public class ProductController {
 
     @Operation(summary = "상품 목록 조회", description = "상품 목록을 페이지 단위로 조회합니다.")
     @GetMapping
-    public ResponseEntity<ProductListResponse> getProducts(@RequestParam(defaultValue = "0") int page,
-                                                           @RequestParam(defaultValue = "10") int size) {
-
+    public ResponseEntity<ProductListResponse> getProducts(@RequestParam(name = "page", defaultValue = "0") Integer page,
+                                                           @RequestParam(name = "size", defaultValue = "10") Integer size) {
         ProductListInfo productListInfo = productFacade.getProducts(page, size);
         ProductListResponse response = productResponseMapper.toProductListResponse(productListInfo);
 
