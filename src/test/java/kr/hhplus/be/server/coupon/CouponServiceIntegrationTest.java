@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.coupon;
 
-import kr.hhplus.be.server.common.redis.coupon.CouponEventInitializer;
+import kr.hhplus.be.server.coupon.infra.redis.CouponRedisInitializer;
 import kr.hhplus.be.server.coupon.domain.*;
 import kr.hhplus.be.server.coupon.infra.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +36,7 @@ public class CouponServiceIntegrationTest {
     private RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
-    private CouponEventInitializer couponEventInitializer;
+    private CouponRedisInitializer couponRedisInitializer;
 
     @BeforeEach
     public void setup() {
@@ -82,7 +82,7 @@ public class CouponServiceIntegrationTest {
         couponJpaRepository.save(coupon);
         couponId = coupon.getId();
 
-        couponEventInitializer.initializeCouponStock(couponId, coupon.getUsageLimit().intValue(), Duration.ofHours(1));
+        couponRedisInitializer.initializeCouponStock(couponId, coupon.getUsageLimit().intValue(), Duration.ofHours(1));
 
         // When
         UserCoupon issuedCoupon = couponService.issueCoupon(userId, couponId);

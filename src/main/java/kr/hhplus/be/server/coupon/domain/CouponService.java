@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.coupon.domain;
 
 import kr.hhplus.be.server.common.exception.ErrorCode;
-import kr.hhplus.be.server.common.redis.coupon.RedisCouponService;
+import kr.hhplus.be.server.coupon.infra.redis.CouponRedisRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +13,7 @@ import java.util.List;
 public class CouponService {
 
     private final CouponRepository couponRepository;
-    private final RedisCouponService redisCouponService;
+    private final CouponRedisRepository redisCouponService;
 
     public List<UserCoupon> getUserCoupons(Long userId) {
         return couponRepository.findByUserIdAndIsUsedFalse(userId);

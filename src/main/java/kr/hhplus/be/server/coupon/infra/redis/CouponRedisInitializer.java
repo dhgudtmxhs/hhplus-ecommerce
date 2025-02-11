@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.common.redis.coupon;
+package kr.hhplus.be.server.coupon.infra.redis;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -8,7 +8,7 @@ import java.time.Duration;
 
 @Service
 @RequiredArgsConstructor
-public class CouponEventInitializer {
+public class CouponRedisInitializer {
     private final RedisTemplate<String, Object> redisTemplate;
 
     public void initializeCouponStock(Long couponId, int initialStock, Duration ttl) {

@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.coupon;
 
-import kr.hhplus.be.server.common.redis.coupon.RedisCouponService;
+import kr.hhplus.be.server.coupon.infra.redis.CouponRedisRepository;
 import kr.hhplus.be.server.coupon.domain.*;
 import kr.hhplus.be.server.coupon.infra.CouponJpaRepository;
 import kr.hhplus.be.server.coupon.infra.UserCouponJpaRepository;
@@ -31,7 +31,7 @@ public class CouponServiceTest {
     private CouponJpaRepository couponJpaRepository;
 
     @Mock
-    private RedisCouponService redisService;
+    private CouponRedisRepository redisService;
 
 
     @BeforeEach

@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.common.redis.coupon;
+package kr.hhplus.be.server.coupon.infra.redis;
 
 import kr.hhplus.be.server.coupon.domain.CouponIssueResult;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class RedisCouponService {
+public class CouponRedisRepository {
     private final RedisTemplate<String, Object> redisTemplate;
 
     // 쿠폰 발급 - 원자적으로 쿠폰 발급 및 재고 감소 처리

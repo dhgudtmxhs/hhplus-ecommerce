@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.coupon;
 
-import kr.hhplus.be.server.common.redis.coupon.CouponEventInitializer;
+import kr.hhplus.be.server.coupon.infra.redis.CouponRedisInitializer;
 import kr.hhplus.be.server.coupon.domain.Coupon;
 import kr.hhplus.be.server.coupon.domain.DiscountType;
 import kr.hhplus.be.server.coupon.infra.CouponJpaRepository;
@@ -41,7 +41,7 @@ public class CouponControllerIntegrationTest {
     private RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
-    private CouponEventInitializer couponEventInitializer;
+    private CouponRedisInitializer couponRedisInitializer;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -61,7 +61,7 @@ public class CouponControllerIntegrationTest {
                 .build());
         couponId = coupon.getId();
         redisTemplate.getConnectionFactory().getConnection().flushDb();
-        couponEventInitializer.initializeCouponStock(couponId, coupon.getUsageLimit().intValue(), Duration.ofHours(1));
+        couponRedisInitializer.initializeCouponStock(couponId, coupon.getUsageLimit().intValue(), Duration.ofHours(1));
 
     }
 
