@@ -19,5 +19,5 @@ CREATE TABLE order_item (
                             quantity BIGINT NOT NULL,
                             created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                             updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                            INDEX idx_order_item_product_created (product_id, created_at)
+                            INDEX idx_order_item_product_created (product_id, created_at, quantity)
 ) ENGINE=InnoDB;
