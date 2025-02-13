@@ -1,19 +1,21 @@
 package kr.hhplus.be.server.payment.application;
 
+import kr.hhplus.be.server.common.exception.ErrorCode;
 import kr.hhplus.be.server.coupon.domain.Coupon;
 import kr.hhplus.be.server.coupon.domain.CouponService;
+import kr.hhplus.be.server.payment.application.event.OrderDataEvent;
 import kr.hhplus.be.server.order.domain.Order;
 import kr.hhplus.be.server.order.domain.OrderService;
 import kr.hhplus.be.server.payment.domain.Payment;
 import kr.hhplus.be.server.payment.domain.PaymentService;
 import kr.hhplus.be.server.point.domain.Point;
 import kr.hhplus.be.server.point.domain.PointService;
-import kr.hhplus.be.server.user.domain.User;
 import kr.hhplus.be.server.user.domain.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,8 +33,8 @@ public class PaymentFacade {
     private final PaymentService paymentService;
     private final OrderDataMapper orderDataMapper;
     private final PaymentInfoMapper paymentInfoMapper;
-    private final ExternalDataService externalDataService;
     private final RedissonClient redissonClient;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public PaymentInfo createPayment(PaymentCommand command) {
@@ -43,7 +45,7 @@ public class PaymentFacade {
         try {
             isLocked = lock.tryLock(0, 5, TimeUnit.SECONDS);
             if (!isLocked) {
-                throw new IllegalStateException("동일 주문에 대해 동시에 여러 결제를 할 수 없습니다.");
+                throw new IllegalStateException(ErrorCode.ORDER_DUPLICATE_PAYMENT_CODE);
             }
 
             userService.getUser(command.userId());
@@ -71,12 +73,12 @@ public class PaymentFacade {
             orderService.completeOrder(command.orderId());
 
             OrderData orderData = orderDataMapper.toOrderData(order);
-            externalDataService.sendOrderData(orderData);
+            eventPublisher.publishEvent(new OrderDataEvent(orderData));
 
             return paymentInfoMapper.toPaymentInfo(payment);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("결제 처리 중 interrupt 발생", e);
+            throw new RuntimeException(ErrorCode.PAYMENT_PROCESS_INTERRUPTED_CODE);
         } finally {
             if (isLocked && lock.isHeldByCurrentThread()) {
                 lock.unlock();
@@ -84,3 +86,5 @@ public class PaymentFacade {
         }
     }
 }
+
+
