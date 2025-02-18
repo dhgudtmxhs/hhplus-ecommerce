@@ -49,6 +49,11 @@ public enum ErrorCode {
     ORDER_PRICE_INVALID("E030", "주문 금액은 0보다 커야 합니다."),
     ORDER_NOT_FOUND("E031", "주문을 찾을 수 없습니다."),
     PAY_PRICE_INVALID("E032", "결제금액은 음수일 수 없습니다."),
+    ORDER_CONCURRENT_NOT_ALLOWED("E033", "동일 사용자는 동시에 여러 주문을 할 수 없습니다."),
+    ORDER_DUPLICATE_PAYMENT("E034", "동일 주문에 대해 동시에 여러 결제를 할 수 없습니다."),
+    ORDER_PROCESS_INTERRUPTED("E035", "주문 처리 중 쓰레드가 인터럽트되었습니다."),
+    PAYMENT_PROCESS_INTERRUPTED("E036", "결제 처리 중 쓰레드가 인터럽트되었습니다."),
+
 
     INTERNAL_SERVER_ERROR("E999", "예상치 못한 오류가 발생했습니다.");
 
@@ -89,6 +94,11 @@ public enum ErrorCode {
     public static final String ORDER_PRICE_INVALID_CODE = "E030";
     public static final String ORDER_NOT_FOUND_CODE = "E031";
     public static final String PAY_PRICE_INVALID_CODE = "E032";
+    public static final String ORDER_CONCURRENT_NOT_ALLOWED_CODE = "E033";
+    public static final String ORDER_DUPLICATE_PAYMENT_CODE = "E034";
+    public static final String ORDER_PROCESS_INTERRUPTED_CODE = "E035";
+    public static final String PAYMENT_PROCESS_INTERRUPTED_CODE = "E036";
+
 
     public static final String INTERNAL_SERVER_ERROR_CODE = "E999";
 
