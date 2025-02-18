@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "order_item", indexes = {
-        @Index(name = "idx_order_item_product_created", columnList = "product_id, created_at")
+        @Index(name = "idx_order_item_product_created", columnList = "product_id, created_at, quantity")
 })
 public class OrderItem extends BaseEntity {
 
