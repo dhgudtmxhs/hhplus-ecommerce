@@ -73,6 +73,8 @@ dependencies {
 	implementation("org.redisson:redisson-spring-boot-starter:3.43.0")
 	implementation("com.fasterxml.jackson.core:jackson-databind")
 
+    // Kafka
+    implementation ("org.springframework.kafka:spring-kafka")
 }
 
 val querydslDir = "${project.buildDir}/generated/sources/annotationProcessor/java/main"
