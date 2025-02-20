@@ -74,7 +74,8 @@ dependencies {
 	implementation("com.fasterxml.jackson.core:jackson-databind")
 
     // Kafka
-    implementation ("org.springframework.kafka:spring-kafka")
+    implementation ("org.springframework.kafka:spring-kafka:2.8.10")
+    testImplementation ("org.springframework.kafka:spring-kafka-test")
 }
 
 val querydslDir = "${project.buildDir}/generated/sources/annotationProcessor/java/main"

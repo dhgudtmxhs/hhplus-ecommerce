@@ -63,12 +63,7 @@ public class PaymentFacade {
             Point point = pointService.findPointForUpdate(command.userId());
             pointService.deductPoint(point, finalPrice);
 
-            Payment payment = paymentService.createPayment(
-                    command.orderId(),
-                    command.orderPrice(),
-                    finalPrice,
-                    command.couponId()
-            );
+            Payment payment = paymentService.createPayment(command.orderId(), command.orderPrice(), finalPrice, command.couponId());
 
             orderService.completeOrder(command.orderId());
 

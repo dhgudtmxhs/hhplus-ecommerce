@@ -53,6 +53,7 @@ public enum ErrorCode {
     ORDER_DUPLICATE_PAYMENT("E034", "동일 주문에 대해 동시에 여러 결제를 할 수 없습니다."),
     ORDER_PROCESS_INTERRUPTED("E035", "주문 처리 중 쓰레드가 인터럽트되었습니다."),
     PAYMENT_PROCESS_INTERRUPTED("E036", "결제 처리 중 쓰레드가 인터럽트되었습니다."),
+    ORDER_DATA_OUTBOX_NOT_FOUND("E037", "주문 정보 아웃박스 조회 결과가 NULL 입니다."),
 
 
     INTERNAL_SERVER_ERROR("E999", "예상치 못한 오류가 발생했습니다.");
@@ -98,7 +99,7 @@ public enum ErrorCode {
     public static final String ORDER_DUPLICATE_PAYMENT_CODE = "E034";
     public static final String ORDER_PROCESS_INTERRUPTED_CODE = "E035";
     public static final String PAYMENT_PROCESS_INTERRUPTED_CODE = "E036";
-
+    public static final String ORDER_DATA_OUTBOX_NOT_FOUND_CODE = "E037";
 
     public static final String INTERNAL_SERVER_ERROR_CODE = "E999";
 
