@@ -17,9 +17,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 
 import org.junit.jupiter.api.BeforeEach;
 
-@SpringBootTest(properties = {
-        "spring.kafka.consumer.auto-offset-reset=earliest"
-})
+@SpringBootTest
 public class KafkaIntegrationTest {
 
     private static CountDownLatch latch;
@@ -35,7 +33,7 @@ public class KafkaIntegrationTest {
     }
 
     // Kafka Consumer
-    @KafkaListener(topics = "test-topic", groupId = "test-group")
+    @KafkaListener(topics = "test-topic", groupId = "test-group", containerFactory = "stringKafkaListenerContainerFactory")
     public void listen(String message) {
         receivedMessages.add(message);
         latch.countDown();
