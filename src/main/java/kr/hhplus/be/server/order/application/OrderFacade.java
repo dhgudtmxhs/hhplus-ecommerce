@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.order.application;
 
+import kr.hhplus.be.server.common.exception.ErrorCode;
 import kr.hhplus.be.server.order.domain.Order;
 import kr.hhplus.be.server.order.domain.OrderService;
 import kr.hhplus.be.server.product.domain.ProductService;
@@ -38,7 +39,7 @@ public class OrderFacade {
 
             isLocked = lock.tryLock(0, 5, TimeUnit.SECONDS);
             if (!isLocked) {
-                throw new IllegalStateException("동일 사용자는 동시에 여러 주문을 할 수 없습니다.");
+                throw new IllegalStateException(ErrorCode.ORDER_CONCURRENT_NOT_ALLOWED_CODE);
             }
 
             userService.getUser(command.userId());
@@ -65,7 +66,7 @@ public class OrderFacade {
             return orderInfoMapper.toOrderInfo(order, orderItemInfos);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("주문 처리 중 interruptr 발생", e);
+            throw new RuntimeException(ErrorCode.ORDER_PROCESS_INTERRUPTED_CODE, e);
         } finally {
             if (isLocked && lock.isHeldByCurrentThread()) {
                 lock.unlock();

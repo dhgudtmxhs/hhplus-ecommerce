@@ -36,6 +36,8 @@ spring:
       port: 6379
   cache:
     type: redis
+  kafka:
+    bootstrap-servers: localhost:9094
 redisson:
   singleServerConfig:
     address: "redis://localhost:6379"
@@ -47,3 +49,4 @@ logging:
     root: INFO
     org.springframework: WARN
     org.hibernate.SQL: DEBUG
+
