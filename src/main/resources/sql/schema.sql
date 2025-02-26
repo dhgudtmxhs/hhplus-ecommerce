@@ -1,5 +1,7 @@
 DROP TABLE IF EXISTS order_item;
 DROP TABLE IF EXISTS product;
+DROP TABLE IF EXISTS `user`;
+DROP TABLE IF EXISTS point;
 
 CREATE TABLE product (
                          id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -21,3 +23,20 @@ CREATE TABLE order_item (
                             updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                             INDEX idx_order_item_product_created (product_id, created_at, quantity)
 ) ENGINE=InnoDB;
+
+CREATE TABLE `user` (
+                        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                        name VARCHAR(255) NOT NULL,
+                        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+CREATE TABLE point (
+                       id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                       user_id BIGINT NOT NULL UNIQUE,
+                       point BIGINT NOT NULL,
+                       created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                       updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                       CONSTRAINT fk_point_user FOREIGN KEY (user_id) REFERENCES `user`(id)
+) ENGINE=InnoDB;
+
