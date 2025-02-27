@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS order_item;
 DROP TABLE IF EXISTS product;
-DROP TABLE IF EXISTS `user`;
 DROP TABLE IF EXISTS point;
+DROP TABLE IF EXISTS `user`;
 
 CREATE TABLE product (
                          id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -36,7 +36,6 @@ CREATE TABLE point (
                        user_id BIGINT NOT NULL UNIQUE,
                        point BIGINT NOT NULL,
                        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                       updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                       CONSTRAINT fk_point_user FOREIGN KEY (user_id) REFERENCES `user`(id)
+                       updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
