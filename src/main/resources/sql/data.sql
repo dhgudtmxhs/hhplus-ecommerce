@@ -46,7 +46,7 @@ SELECT n FROM numbers;
 INSERT INTO `user` (name)
 SELECT CONCAT('User ', n)
 FROM temp_numbers
-WHERE n <= 100;
+WHERE n <= 1000;
 
 DROP TEMPORARY TABLE IF EXISTS temp_numbers;
 

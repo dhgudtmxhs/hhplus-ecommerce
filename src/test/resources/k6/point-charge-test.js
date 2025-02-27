@@ -12,7 +12,7 @@ export let options = {
     ],
 };
 
-const userIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const userIds = Array.from({ length: 1000 }, (_, i) => i + 1);
 
 export default function () {
     const userId = userIds[Math.floor(Math.random() * userIds.length)];
@@ -21,6 +21,7 @@ export default function () {
         userId: userId,
         amount: 1000
     });
+
     const params = { headers: { 'Content-Type': 'application/json' } };
 
     let res = http.patch('http://localhost:8080/api/point/charge', payload, params);
