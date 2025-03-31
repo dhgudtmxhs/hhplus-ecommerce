@@ -33,3 +33,22 @@ SELECT
 FROM temp_numbers;
 
 DROP TEMPORARY TABLE IF EXISTS temp_numbers;
+CREATE TEMPORARY TABLE temp_numbers (n INT PRIMARY KEY);
+
+INSERT INTO temp_numbers (n)
+WITH RECURSIVE numbers AS (
+    SELECT 1 AS n
+    UNION ALL
+    SELECT n + 1 FROM numbers WHERE n < 1000000
+)
+SELECT n FROM numbers;
+
+INSERT INTO `user` (name)
+SELECT CONCAT('User ', n)
+FROM temp_numbers
+WHERE n <= 1000;
+
+DROP TEMPORARY TABLE IF EXISTS temp_numbers;
+
+INSERT INTO point (user_id, point)
+SELECT id, 0 FROM `user`;
