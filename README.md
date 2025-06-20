@@ -12,6 +12,7 @@ e-commerce 에서 자주 사용되는 기능들을 구현한 백엔드 프로젝
 
 ## [🔗 ERD, API명세](https://github.com/dhgudtmxhs/hhplus-ecommerce/pull/12)
 
+## [🔗 MSA 형태로 도메인 배포단위 분리 및 트랜잭션 처리 설계](https://github.com/dhgudtmxhs/hhplus-ecommerce/pull/26)
 
 ## Configuration
 | **Role**           | **Component**                |
